@@ -94,7 +94,7 @@ void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionA
     }
 }
 
-void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, unsigned int PiecexPosition, unsigned int PieceyPosition, unsigned int (*PositionalControl)[8][8], unsigned int (*ProtectionMatrix)[8][8], unsigned int (*AttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5])
+void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, unsigned int PiecexPosition, unsigned int PieceyPosition, unsigned int (*PositionalControl)[8][8], unsigned int (*ProtectionMatrix)[8][8], unsigned int (*AttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5], unsigned int (*iterationArrayW)[3][300], unsigned int(*iterationIndexW), unsigned int (*iterationArrayB)[3][300], unsigned int(*iterationIndexB))
 {
     flgRookPiece = pieces == WROOK1 || pieces == WROOK2 || pieces == BROOK1 || pieces == BROOK2;
     flgKnightPiece = pieces == WKNIGHT1 || pieces == WKNIGHT2 || pieces == BKNIGHT1 || pieces == BKNIGHT2;
@@ -154,6 +154,22 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
             if (pieceAtPosition == NOTHING)
             {
                 (*PositionalControl)[yIndex][xIndex] = 1;
+                if (flgWhitePiece)
+                {
+                    printf("%d", iterationIndexW);
+                    (*iterationArrayW)[0][(*iterationIndexW)] = pieces;
+                    (*iterationArrayW)[1][(*iterationIndexW)] = xIndex;
+                    (*iterationArrayW)[2][(*iterationIndexW)] = yIndex;
+                    ++(*iterationIndexW);
+                }
+                else if (flgBlackPiece)
+                {
+                    (*iterationArrayB)[0][(*iterationIndexB)] = pieces;
+                    (*iterationArrayB)[1][(*iterationIndexB)] = xIndex;
+                    (*iterationArrayB)[2][(*iterationIndexB)] = yIndex;
+                    ++(*iterationIndexB);
+                }
+
                 if (flgRangePiece)
                 {
                     searchIndex++;
@@ -180,6 +196,20 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
             else if ((flgWhitePiece && (pieceAtPosition > WPROMOTION2)) || (flgBlackPiece && (pieceAtPosition <= WPROMOTION2)))
             {
                 (*AttackMatrix)[yIndex][xIndex] = pieceAtPosition;
+                if (flgWhitePiece)
+                {
+                    (*iterationArrayW)[0][(*iterationIndexW)] = pieces;
+                    (*iterationArrayW)[1][(*iterationIndexW)] = xIndex;
+                    (*iterationArrayW)[2][(*iterationIndexW)] = yIndex;
+                    ++(*iterationIndexW);
+                }
+                else if (flgBlackPiece)
+                {
+                    (*iterationArrayB)[0][(*iterationIndexB)] = pieces;
+                    (*iterationArrayB)[1][(*iterationIndexB)] = xIndex;
+                    (*iterationArrayB)[2][(*iterationIndexB)] = yIndex;
+                    ++(*iterationIndexB);
+                }
                 i = 0;
                 while ((*AttackMapping)[(pieceAtPosition - 1)][i] && i < 6)
                 {
@@ -194,22 +224,15 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
     }
 }
 
-void materialBalance(unsigned int chessMatrix[8][8], float (*materialEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5])
+void materialBalance(unsigned int chessMatrix[8][8], float(*materialEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5])
 {
-    for (unsigned int j = 0; j < 8; j++)
-    {
-        for (unsigned int i = 0; i < 8; i++)
-        {
-            chessMatrixTemp[j][i] = chessMatrix[j][i];
-        }
-    }
     for (unsigned int j = 0; j < 8; j++)
     {
         for (unsigned int i = 0; i < 8; i++)
         {
             if ((*wAttackMatrix)[j][i])
             {
-                wAttackedPiece = chessMatrixTemp[j][i];
+                wAttackedPiece = chessMatrix[j][i];
                 for (unsigned int k = 0; k < 5; k++)
                 {
                     protectionIndex = ((*ProtectionMapping)[wAttackedPiece - 1][k]);
@@ -224,7 +247,8 @@ void materialBalance(unsigned int chessMatrix[8][8], float (*materialEval), unsi
                 quickSort(ProtectionArray, 0, 4);
                 quickSort(AttackArray, 0, 4);
 
-                for (unsigned int k = 0; k < 5; k++) {
+                for (unsigned int k = 0; k < 5; k++)
+                {
                     ProtectionArray[k] = ProtectionArray[k] == NOTHING ? 0 : ProtectionArray[k];
                     AttackArray[k] = AttackArray[k] == NOTHING ? 0 : AttackArray[k];
                 }
@@ -252,7 +276,7 @@ void materialBalance(unsigned int chessMatrix[8][8], float (*materialEval), unsi
 
             if ((*bAttackMatrix)[j][i])
             {
-                bAttackedPiece = chessMatrixTemp[j][i];
+                bAttackedPiece = chessMatrix[j][i];
                 for (unsigned int k = 0; k < 5; k++)
                 {
                     protectionIndex = ((*ProtectionMapping)[bAttackedPiece - 1][k]);
@@ -267,7 +291,8 @@ void materialBalance(unsigned int chessMatrix[8][8], float (*materialEval), unsi
                 quickSort(ProtectionArray, 0, 4);
                 quickSort(AttackArray, 0, 4);
 
-                for (unsigned int k = 0; k < 5; k++) {
+                for (unsigned int k = 0; k < 5; k++)
+                {
                     ProtectionArray[k] = ProtectionArray[k] == NOTHING ? 0 : ProtectionArray[k];
                     AttackArray[k] = AttackArray[k] == NOTHING ? 0 : AttackArray[k];
                 }
@@ -298,9 +323,11 @@ void materialBalance(unsigned int chessMatrix[8][8], float (*materialEval), unsi
     (*materialEval) = (float)wMaxMaterialGain - (float)wMaxMaterialLoss;
 }
 
-void processBoardPosition(unsigned int chessMatrix[8][8], float (*positionEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8])
+void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*iterationArrayW)[3][300], unsigned int(*iterationIndexW), unsigned int (*iterationArrayB)[3][300], unsigned int(*iterationIndexB))
 {
     getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
+    (*iterationIndexW) = 0;
+    (*iterationIndexB) = 0;
     for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
     {
         if (xPositionArray[pieces - 1] == NOTHING || yPositionArray[pieces - 1] == NOTHING)
@@ -310,101 +337,101 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float (*positionEval),
         switch (pieces)
         {
         case WROOK1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wRook1PositionalControl, &wRook1ProtectionMatrix, &wRook1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wRook1PositionalControl, &wRook1ProtectionMatrix, &wRook1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WKNIGHT1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wKnight1PositionalControl, &wKnight1ProtectionMatrix, &wKnight1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wKnight1PositionalControl, &wKnight1ProtectionMatrix, &wKnight1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WBISHOP1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wBishop1PositionalControl, &wBishop1ProtectionMatrix, &wBishop1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wBishop1PositionalControl, &wBishop1ProtectionMatrix, &wBishop1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WQUEEN:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wQueenPositionalControl, &wQueenProtectionMatrix, &wQueenAttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wQueenPositionalControl, &wQueenProtectionMatrix, &wQueenAttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WKING:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wKingPositionalControl, &wKingProtectionMatrix, &wKingAttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wKingPositionalControl, &wKingProtectionMatrix, &wKingAttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WBISHOP2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wBishop2PositionalControl, &wBishop2ProtectionMatrix, &wBishop2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wBishop2PositionalControl, &wBishop2ProtectionMatrix, &wBishop2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WKNIGHT2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wKnight2PositionalControl, &wKnight2ProtectionMatrix, &wKnight2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wKnight2PositionalControl, &wKnight2ProtectionMatrix, &wKnight2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WROOK2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wRook2PositionalControl, &wRook2ProtectionMatrix, &wRook2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wRook2PositionalControl, &wRook2ProtectionMatrix, &wRook2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn1PositionalControl, &wPawn1ProtectionMatrix, &wPawn1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn1PositionalControl, &wPawn1ProtectionMatrix, &wPawn1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn2PositionalControl, &wPawn2ProtectionMatrix, &wPawn2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn2PositionalControl, &wPawn2ProtectionMatrix, &wPawn2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN3:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn3PositionalControl, &wPawn3ProtectionMatrix, &wPawn3AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn3PositionalControl, &wPawn3ProtectionMatrix, &wPawn3AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN4:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn4PositionalControl, &wPawn4ProtectionMatrix, &wPawn4AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn4PositionalControl, &wPawn4ProtectionMatrix, &wPawn4AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN5:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn5PositionalControl, &wPawn5ProtectionMatrix, &wPawn5AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn5PositionalControl, &wPawn5ProtectionMatrix, &wPawn5AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN6:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn6PositionalControl, &wPawn6ProtectionMatrix, &wPawn6AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn6PositionalControl, &wPawn6ProtectionMatrix, &wPawn6AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN7:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn7PositionalControl, &wPawn7ProtectionMatrix, &wPawn7AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn7PositionalControl, &wPawn7ProtectionMatrix, &wPawn7AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case WPAWN8:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn8PositionalControl, &wPawn8ProtectionMatrix, &wPawn8AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &wPawn8PositionalControl, &wPawn8ProtectionMatrix, &wPawn8AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
 
         case BROOK1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bRook1PositionalControl, &bRook1ProtectionMatrix, &bRook1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bRook1PositionalControl, &bRook1ProtectionMatrix, &bRook1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BKNIGHT1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bKnight1PositionalControl, &bKnight1ProtectionMatrix, &bKnight1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bKnight1PositionalControl, &bKnight1ProtectionMatrix, &bKnight1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BBISHOP1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bBishop1PositionalControl, &bBishop1ProtectionMatrix, &bBishop1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bBishop1PositionalControl, &bBishop1ProtectionMatrix, &bBishop1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BQUEEN:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bQueenPositionalControl, &bQueenProtectionMatrix, &bQueenAttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bQueenPositionalControl, &bQueenProtectionMatrix, &bQueenAttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BKING:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bKingPositionalControl, &bKingProtectionMatrix, &bKingAttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bKingPositionalControl, &bKingProtectionMatrix, &bKingAttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BBISHOP2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bBishop2PositionalControl, &bBishop2ProtectionMatrix, &bBishop2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bBishop2PositionalControl, &bBishop2ProtectionMatrix, &bBishop2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BKNIGHT2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bKnight2PositionalControl, &bKnight2ProtectionMatrix, &bKnight2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bKnight2PositionalControl, &bKnight2ProtectionMatrix, &bKnight2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BROOK2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bRook2PositionalControl, &bRook2ProtectionMatrix, &bRook2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bRook2PositionalControl, &bRook2ProtectionMatrix, &bRook2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN1:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn1PositionalControl, &bPawn1ProtectionMatrix, &bPawn1AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn1PositionalControl, &bPawn1ProtectionMatrix, &bPawn1AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN2:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn2PositionalControl, &bPawn2ProtectionMatrix, &bPawn2AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn2PositionalControl, &bPawn2ProtectionMatrix, &bPawn2AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN3:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn3PositionalControl, &bPawn3ProtectionMatrix, &bPawn3AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn3PositionalControl, &bPawn3ProtectionMatrix, &bPawn3AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN4:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn4PositionalControl, &bPawn4ProtectionMatrix, &bPawn4AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn4PositionalControl, &bPawn4ProtectionMatrix, &bPawn4AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN5:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn5PositionalControl, &bPawn5ProtectionMatrix, &bPawn5AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn5PositionalControl, &bPawn5ProtectionMatrix, &bPawn5AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN6:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn6PositionalControl, &bPawn6ProtectionMatrix, &bPawn6AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn6PositionalControl, &bPawn6ProtectionMatrix, &bPawn6AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN7:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn7PositionalControl, &bPawn7ProtectionMatrix, &bPawn7AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn7PositionalControl, &bPawn7ProtectionMatrix, &bPawn7AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         case BPAWN8:
-            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn8PositionalControl, &bPawn8ProtectionMatrix, &bPawn8AttackMatrix, &ProtectionMapping, &AttackMapping);
+            processPieceActivity(chessMatrix, pieces, PiecexPosition, PieceyPosition, &bPawn8PositionalControl, &bPawn8ProtectionMatrix, &bPawn8AttackMatrix, &ProtectionMapping, &AttackMapping, iterationArrayW, iterationIndexW, iterationArrayB, iterationIndexB);
             break;
         }
     }
@@ -432,11 +459,11 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float (*positionEval),
             wTotNumPcsProtected += !!wProtectionMatrix[j][i];
 
             (*wAttackMatrix)[j][i] = !!wRook1AttackMatrix[j][i] + !!wKnight1AttackMatrix[j][i] +
-                                  !!wBishop1AttackMatrix[j][i] + !!wQueenAttackMatrix[j][i] + !!wKingAttackMatrix[j][i] +
-                                  !!wBishop2AttackMatrix[j][i] + !!wKnight2AttackMatrix[j][i] + !!wRook2AttackMatrix[j][i] +
-                                  !!wPawn1AttackMatrix[j][i] + !!wPawn2AttackMatrix[j][i] + !!wPawn3AttackMatrix[j][i] +
-                                  !!wPawn4AttackMatrix[j][i] + !!wPawn5AttackMatrix[j][i] + !!wPawn6AttackMatrix[j][i] +
-                                  !!wPawn7AttackMatrix[j][i] + !!wPawn8AttackMatrix[j][i];
+                                     !!wBishop1AttackMatrix[j][i] + !!wQueenAttackMatrix[j][i] + !!wKingAttackMatrix[j][i] +
+                                     !!wBishop2AttackMatrix[j][i] + !!wKnight2AttackMatrix[j][i] + !!wRook2AttackMatrix[j][i] +
+                                     !!wPawn1AttackMatrix[j][i] + !!wPawn2AttackMatrix[j][i] + !!wPawn3AttackMatrix[j][i] +
+                                     !!wPawn4AttackMatrix[j][i] + !!wPawn5AttackMatrix[j][i] + !!wPawn6AttackMatrix[j][i] +
+                                     !!wPawn7AttackMatrix[j][i] + !!wPawn8AttackMatrix[j][i];
 
             wTotNumPcsAttacked += !!(*wAttackMatrix)[j][i];
 
@@ -459,11 +486,11 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float (*positionEval),
             bTotNumPcsProtected += !!bProtectionMatrix[j][i];
 
             (*bAttackMatrix)[j][i] = !!bRook1AttackMatrix[j][i] + !!bKnight1AttackMatrix[j][i] +
-                                  !!bBishop1AttackMatrix[j][i] + !!bQueenAttackMatrix[j][i] + !!bKingAttackMatrix[j][i] +
-                                  !!bBishop2AttackMatrix[j][i] + !!bKnight2AttackMatrix[j][i] + !!bRook2AttackMatrix[j][i] +
-                                  !!bPawn1AttackMatrix[j][i] + !!bPawn2AttackMatrix[j][i] + !!bPawn3AttackMatrix[j][i] +
-                                  !!bPawn4AttackMatrix[j][i] + !!bPawn5AttackMatrix[j][i] + !!bPawn6AttackMatrix[j][i] +
-                                  !!bPawn7AttackMatrix[j][i] + !!bPawn8AttackMatrix[j][i];
+                                     !!bBishop1AttackMatrix[j][i] + !!bQueenAttackMatrix[j][i] + !!bKingAttackMatrix[j][i] +
+                                     !!bBishop2AttackMatrix[j][i] + !!bKnight2AttackMatrix[j][i] + !!bRook2AttackMatrix[j][i] +
+                                     !!bPawn1AttackMatrix[j][i] + !!bPawn2AttackMatrix[j][i] + !!bPawn3AttackMatrix[j][i] +
+                                     !!bPawn4AttackMatrix[j][i] + !!bPawn5AttackMatrix[j][i] + !!bPawn6AttackMatrix[j][i] +
+                                     !!bPawn7AttackMatrix[j][i] + !!bPawn8AttackMatrix[j][i];
 
             bTotNumPcsAttacked += !!(*bAttackMatrix)[j][i];
 
@@ -474,22 +501,57 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float (*positionEval),
             bValPcsAttack += (!!(*bAttackMatrix)[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
             wValPcsProtect += (!!wProtectionMatrix[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
             bValPcsProtect += (!!bProtectionMatrix[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
-
-
-            
         }
     }
-    (*positionEval) = (((float)wTotNumSqControlled - (float)bTotNumSqControlled) * VAL_SINGLE_SQUARE)  + 
-    (((float)wTotNumPcsAttacked - (float)bTotNumPcsAttacked) * VAL_ATTACKED_PIECE) + 
-    (((float)wTotNumPcsProtected - (float)bTotNumPcsProtected) * VAL_PROTECTED_PIECE) + 
-    (((float)wValPcsAttack - (float)bValPcsAttack) * VAL_ATTACKED_PIECE_VALUE) + 
-    (((float)wValPcsProtect - (float)bValPcsProtect) * VAL_PROTECTED_PIECE_VALUE);
+    (*positionEval) = (((float)wTotNumSqControlled - (float)bTotNumSqControlled) * VAL_SINGLE_SQUARE) +
+                      (((float)wTotNumPcsAttacked - (float)bTotNumPcsAttacked) * VAL_ATTACKED_PIECE) +
+                      (((float)wTotNumPcsProtected - (float)bTotNumPcsProtected) * VAL_PROTECTED_PIECE) +
+                      (((float)wValPcsAttack - (float)bValPcsAttack) * VAL_ATTACKED_PIECE_VALUE) +
+                      (((float)wValPcsProtect - (float)bValPcsProtect) * VAL_PROTECTED_PIECE_VALUE);
 }
 
 int main(void)
 {
-    processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix);
+
+    processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayW, &iterationIndexW, &iterationArrayB, &iterationIndexB);
 
     materialBalance(chessMatrix, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
     overallEval = materialEval + positionEval;
+
+    for (unsigned int j = 0; j < 8; j++)
+    {
+        for (unsigned int i = 0; i < 8; i++)
+        {
+            chessMatrixTempW[j][i] = chessMatrix[j][i];
+            chessMatrixTempB[j][i] = chessMatrix[j][i];
+        }
+    }
+    getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
+    for (unsigned int i = 0; i < iterationIndexW; i++)
+    {
+        iterationPieceW = iterationArrayW[0][i];
+        iterationXLocW = iterationArrayW[1][i];
+        iterationYLocW = iterationArrayW[2][i];
+        iterationXOrgLocW = xPositionArray[iterationPieceW - 1];
+        iterationYOrgLocW = yPositionArray[iterationPieceW - 1];
+        if ((chessMatrix[iterationYLocW][iterationXLocW] >= WROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= WPROMOTION2))
+        {
+            printf("Error, you canot take your own piece,\n");
+            wExchangeGain = 0;
+        }
+        else if ((chessMatrix[iterationYLocW][iterationXLocW] >= BROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= BPROMOTION2))
+        {
+            printf("Capture,\n");
+            chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
+            chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
+            wExchangeGain = ValPcs[(chessMatrix[iterationYLocW][iterationXLocW]) - 1];
+
+        }
+        else if (chessMatrix[iterationYLocW][iterationXLocW] == NOTHING) {
+            printf("Maneouvre,\n");
+            chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
+            chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
+            wExchangeGain = 0;
+        }
+    }
 }

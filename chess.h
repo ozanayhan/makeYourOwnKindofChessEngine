@@ -65,7 +65,8 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, NOTHING, WQUEEN, WKING, NOT
                                    {NOTHING, BPAWN2, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN7, NOTHING},
                                    {BPAWN1, NOTHING, BPAWN3, BPAWN4, BPAWN5, BPAWN6, NOTHING, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, NOTHING, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
-unsigned int chessMatrixTemp[8][8] = { 0 };
+unsigned int chessMatrixTempW[8][8] = { 0 };
+unsigned int chessMatrixTempB[8][8] = { 0 };
 
 unsigned int xPositionArray[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
@@ -186,6 +187,16 @@ unsigned int bProtectionMatrix[8][8] = { 0 };
 unsigned int ProtectionMapping[36][5] = { 0 };
 unsigned int AttackMapping[36][5] = { 0 };
 
+unsigned int iterationArrayW[3][300];
+unsigned int iterationArrayB[3][300];
+unsigned int iterationIndexW = 0;
+unsigned int iterationIndexB = 0;
+
+unsigned int iterationPieceW = 0;
+unsigned int iterationXLocW = 0;
+unsigned int iterationYLocW = 0;
+unsigned int iterationXOrgLocW = 0;
+unsigned int iterationYOrgLocW = 0;
 
 unsigned int wRook1xPosition;
 unsigned int wRook1yPosition;
@@ -294,6 +305,8 @@ int wMaterialLossCapture4 = 0;
 int wMaterialLossCapture5 = 0;
 int wMaterialLoss = 0;
 int wMaxMaterialLoss = 0;
+int wExchangeGain = 0;
+int wExchangeLoss = 0;
 
 float positionEval = 0.0F;
 float materialEval = 0.0F;
