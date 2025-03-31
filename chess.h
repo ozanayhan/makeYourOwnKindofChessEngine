@@ -58,6 +58,7 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, NOTHING, WQUEEN, WKING, NOT
                                    {NOTHING, BPAWN2, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN7, NOTHING},
                                    {BPAWN1, NOTHING, BPAWN3, BPAWN4, BPAWN5, BPAWN6, NOTHING, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, NOTHING, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
+unsigned int chessMatrixTemp[8][8] = { 0 };
 
 unsigned int xPositionArray[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
@@ -255,3 +256,32 @@ unsigned int wValPcsAttack = 0;
 unsigned int bValPcsAttack = 0;
 unsigned int wValPcsProtect = 0;
 unsigned int bValPcsProtect = 0;
+
+unsigned int wAttackedPiece = 0;
+unsigned int bAttackedPiece = 0;
+
+unsigned int ProtectionArray[5] = { 0 };
+unsigned int AttackArray[5] = { 0 };
+unsigned int wNumAttackingPiece = 0;
+unsigned int bNumProtectingPiece = 0;
+unsigned int bNumAttackingPiece = 0;
+unsigned int wNumProtectingPiece = 0;
+
+unsigned int protectionIndex = 0;
+unsigned int attackIndex = 0;
+
+int wMaterialGainCapture1 = 0;
+int wMaterialGainCapture2 = 0;
+int wMaterialGainCapture3 = 0;
+int wMaterialGainCapture4 = 0;
+int wMaterialGainCapture5 = 0;
+int wMaterialGain = 0;
+int wMaxMaterialGain = 0;
+
+int wMaterialLossCapture1 = 0;
+int wMaterialLossCapture2 = 0;
+int wMaterialLossCapture3 = 0;
+int wMaterialLossCapture4 = 0;
+int wMaterialLossCapture5 = 0;
+int wMaterialLoss = 0;
+int wMaxMaterialLoss = 0;

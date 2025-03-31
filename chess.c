@@ -1,6 +1,77 @@
 #include <stdio.h>
 #include "chess.h"
 
+// Function to find the minimum of 5 numbers
+int findMin(int a, int b, int c, int d, int e)
+{
+    int min = a; // Assume the first number is the smallest
+
+    if (b < min)
+        min = b;
+    if (c < min)
+        min = c;
+    if (d < min)
+        min = d;
+    if (e < min)
+        min = e;
+
+    return min;
+}
+
+// Function to find the maximum of 5 numbers
+int findMax(int a, int b, int c, int d, int e)
+{
+    int max = a; // Assume the first number is the biggest
+
+    if (b > max)
+        max = b;
+    if (c > max)
+        max = c;
+    if (d > max)
+        max = d;
+    if (e > max)
+        max = e;
+
+    return max;
+}
+
+// Function to swap two elements
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Partition function
+int partition(int arr[], int low, int high)
+{
+    int pivot = arr[high]; // Choosing the last element as pivot
+    int i = (low - 1);
+
+    for (int j = low; j < high; j++)
+    {
+        if (arr[j] < pivot)
+        {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+
+// QuickSort function
+void quickSort(int arr[], int low, int high)
+{
+    if (low < high)
+    {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
 void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionArray)[36], unsigned int (*yPositionArray)[36])
 {
     for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
@@ -97,11 +168,12 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
             {
                 (*ProtectionMatrix)[yIndex][xIndex] = pieceAtPosition;
                 i = 0;
-                while ((*ProtectionMapping)[(pieceAtPosition - 1)][i] && i < 6) {
+                while ((*ProtectionMapping)[(pieceAtPosition - 1)][i] && i < 6)
+                {
                     i++;
                 }
                 if (i < 6)
-                (*ProtectionMapping)[(pieceAtPosition - 1)][i] = pieces;
+                    (*ProtectionMapping)[(pieceAtPosition - 1)][i] = pieces;
                 searchIndex = 1;
                 break;
             }
@@ -109,11 +181,12 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
             {
                 (*AttackMatrix)[yIndex][xIndex] = pieceAtPosition;
                 i = 0;
-                while ((*ProtectionMapping)[(pieceAtPosition - 1)][i] &&  i < 6) {
+                while ((*AttackMapping)[(pieceAtPosition - 1)][i] && i < 6)
+                {
                     i++;
                 }
                 if (i < 6)
-                (*AttackMapping)[(pieceAtPosition - 1)][i] = pieces;
+                    (*AttackMapping)[(pieceAtPosition - 1)][i] = pieces;
                 searchIndex = 1;
                 break;
             }
@@ -121,10 +194,111 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
     }
 }
 
-int main(void)
+void materialBalance(unsigned int chessMatrix[8][8], unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5])
+{
+    for (unsigned int j = 0; j < 8; j++)
+    {
+        for (unsigned int i = 0; i < 8; i++)
+        {
+            chessMatrixTemp[j][i] = chessMatrix[j][i];
+        }
+    }
+    for (unsigned int j = 0; j < 8; j++)
+    {
+        for (unsigned int i = 0; i < 8; i++)
+        {
+            if ((*wAttackMatrix)[j][i])
+            {
+                wAttackedPiece = chessMatrixTemp[j][i];
+                for (unsigned int k = 0; k < 5; k++)
+                {
+                    protectionIndex = ((*ProtectionMapping)[wAttackedPiece - 1][k]);
+                    attackIndex = ((*AttackMapping)[wAttackedPiece - 1][k]);
+                    ProtectionArray[k] = protectionIndex ? ValPcs[protectionIndex - 1] : NOTHING;
+                    AttackArray[k] = attackIndex ? ValPcs[attackIndex - 1] : NOTHING;
+                    if (protectionIndex)
+                        bNumProtectingPiece = k;
+                    if (attackIndex)
+                        wNumAttackingPiece = k;
+                }
+                quickSort(ProtectionArray, 0, 4);
+                quickSort(AttackArray, 0, 4);
+
+                for (unsigned int k = 0; k < 5; k++) {
+                    ProtectionArray[k] = ProtectionArray[k] == NOTHING ? 0 : ProtectionArray[k];
+                    AttackArray[k] = AttackArray[k] == NOTHING ? 0 : AttackArray[k];
+                }
+
+                if (wNumAttackingPiece < bNumProtectingPiece)
+                {
+                    wMaterialGainCapture1 = ValPcs[wAttackedPiece - 1] - AttackArray[1];
+                    wMaterialGainCapture2 = wMaterialGainCapture1 + ProtectionArray[1] - AttackArray[2];
+                    wMaterialGainCapture3 = wMaterialGainCapture2 + ProtectionArray[2] - AttackArray[3];
+                    wMaterialGainCapture4 = wMaterialGainCapture3 + ProtectionArray[3] - AttackArray[4];
+                    wMaterialGainCapture5 = wMaterialGainCapture4 + ProtectionArray[4] - AttackArray[5];
+                }
+                else
+                {
+                    wMaterialGainCapture1 = ValPcs[wAttackedPiece - 1];
+                    wMaterialGainCapture2 = wMaterialGainCapture1 - AttackArray[1] + ProtectionArray[1];
+                    wMaterialGainCapture3 = wMaterialGainCapture2 - AttackArray[2] + ProtectionArray[2];
+                    wMaterialGainCapture4 = wMaterialGainCapture3 - AttackArray[3] + ProtectionArray[3];
+                    wMaterialGainCapture5 = wMaterialGainCapture4 - AttackArray[4] + ProtectionArray[4];
+                }
+                wMaterialGain = findMin(wMaterialGainCapture1, wMaterialGainCapture2, wMaterialGainCapture3, wMaterialGainCapture4, wMaterialGainCapture5);
+                wMaterialGain = wMaterialGain < 0 ? 0 : wMaterialGain;
+                wMaxMaterialGain = wMaterialGain > wMaxMaterialGain ? wMaterialGain : wMaxMaterialGain;
+            }
+
+            if ((*bAttackMatrix)[j][i])
+            {
+                bAttackedPiece = chessMatrixTemp[j][i];
+                for (unsigned int k = 0; k < 5; k++)
+                {
+                    protectionIndex = ((*ProtectionMapping)[bAttackedPiece - 1][k]);
+                    attackIndex = ((*AttackMapping)[bAttackedPiece - 1][k]);
+                    ProtectionArray[k] = protectionIndex ? ValPcs[protectionIndex - 1] : NOTHING;
+                    AttackArray[k] = attackIndex ? ValPcs[attackIndex - 1] : NOTHING;
+                    if (protectionIndex)
+                        wNumProtectingPiece = k;
+                    if (attackIndex)
+                        bNumAttackingPiece = k;
+                }
+                quickSort(ProtectionArray, 0, 4);
+                quickSort(AttackArray, 0, 4);
+
+                for (unsigned int k = 0; k < 5; k++) {
+                    ProtectionArray[k] = ProtectionArray[k] == NOTHING ? 0 : ProtectionArray[k];
+                    AttackArray[k] = AttackArray[k] == NOTHING ? 0 : AttackArray[k];
+                }
+
+                if (bNumAttackingPiece > wNumProtectingPiece)
+                {
+                    wMaterialLossCapture1 = -ProtectionArray[1];
+                    wMaterialLossCapture2 = wMaterialLossCapture1 + AttackArray[1] - ProtectionArray[2];
+                    wMaterialLossCapture3 = wMaterialLossCapture2 + AttackArray[2] - ProtectionArray[3];
+                    wMaterialLossCapture4 = wMaterialLossCapture3 + AttackArray[3] - ProtectionArray[4];
+                    wMaterialLossCapture5 = wMaterialLossCapture4 + AttackArray[4] - ProtectionArray[5];
+                }
+                else
+                {
+                    wMaterialLossCapture1 = AttackArray[1] - ProtectionArray[1];
+                    wMaterialLossCapture2 = wMaterialLossCapture1 + AttackArray[2] - ProtectionArray[2];
+                    wMaterialLossCapture3 = wMaterialLossCapture2 + AttackArray[3] - ProtectionArray[3];
+                    wMaterialLossCapture4 = wMaterialLossCapture3 + AttackArray[4] - ProtectionArray[4];
+                    wMaterialLossCapture5 = wMaterialLossCapture4 + AttackArray[5] - ProtectionArray[5];
+                }
+                wMaterialLoss = findMax(wMaterialLossCapture1, wMaterialLossCapture2, wMaterialLossCapture3, wMaterialLossCapture4, wMaterialLossCapture5);
+                wMaterialLoss = wMaterialLoss > 0 ? 0 : wMaterialLoss;
+                wMaxMaterialLoss = wMaterialLoss > wMaxMaterialLoss ? wMaterialLoss : wMaxMaterialLoss;
+            }
+        }
+    }
+}
+
+void processBoardPosition(unsigned int chessMatrix[8][8], unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8])
 {
     getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
-
     for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
     {
         if (xPositionArray[pieces - 1] == NOTHING || yPositionArray[pieces - 1] == NOTHING)
@@ -255,14 +429,14 @@ int main(void)
 
             wTotNumPcsProtected += !!wProtectionMatrix[j][i];
 
-            wAttackMatrix[j][i] = !!wRook1AttackMatrix[j][i] + !!wKnight1AttackMatrix[j][i] +
+            (*wAttackMatrix)[j][i] = !!wRook1AttackMatrix[j][i] + !!wKnight1AttackMatrix[j][i] +
                                   !!wBishop1AttackMatrix[j][i] + !!wQueenAttackMatrix[j][i] + !!wKingAttackMatrix[j][i] +
                                   !!wBishop2AttackMatrix[j][i] + !!wKnight2AttackMatrix[j][i] + !!wRook2AttackMatrix[j][i] +
                                   !!wPawn1AttackMatrix[j][i] + !!wPawn2AttackMatrix[j][i] + !!wPawn3AttackMatrix[j][i] +
                                   !!wPawn4AttackMatrix[j][i] + !!wPawn5AttackMatrix[j][i] + !!wPawn6AttackMatrix[j][i] +
                                   !!wPawn7AttackMatrix[j][i] + !!wPawn8AttackMatrix[j][i];
 
-            wTotNumPcsAttacked += !!wAttackMatrix[j][i];
+            wTotNumPcsAttacked += !!(*wAttackMatrix)[j][i];
 
             bPositionalControl[j][i] = bRook1PositionalControl[j][i] + bKnight1PositionalControl[j][i] +
                                        bBishop1PositionalControl[j][i] + bQueenPositionalControl[j][i] + bKingPositionalControl[j][i] +
@@ -282,22 +456,29 @@ int main(void)
 
             bTotNumPcsProtected += !!bProtectionMatrix[j][i];
 
-            bAttackMatrix[j][i] = !!bRook1AttackMatrix[j][i] + !!bKnight1AttackMatrix[j][i] +
+            (*bAttackMatrix)[j][i] = !!bRook1AttackMatrix[j][i] + !!bKnight1AttackMatrix[j][i] +
                                   !!bBishop1AttackMatrix[j][i] + !!bQueenAttackMatrix[j][i] + !!bKingAttackMatrix[j][i] +
                                   !!bBishop2AttackMatrix[j][i] + !!bKnight2AttackMatrix[j][i] + !!bRook2AttackMatrix[j][i] +
                                   !!bPawn1AttackMatrix[j][i] + !!bPawn2AttackMatrix[j][i] + !!bPawn3AttackMatrix[j][i] +
                                   !!bPawn4AttackMatrix[j][i] + !!bPawn5AttackMatrix[j][i] + !!bPawn6AttackMatrix[j][i] +
                                   !!bPawn7AttackMatrix[j][i] + !!bPawn8AttackMatrix[j][i];
 
-            bTotNumPcsAttacked += !!bAttackMatrix[j][i];
+            bTotNumPcsAttacked += !!(*bAttackMatrix)[j][i];
 
-            wTotNumPcsEnPrise += (bAttackMatrix[j][i] - wProtectionMatrix[j][i]) > 0;
-            bTotNumPcsEnPrise += (wAttackMatrix[j][i] - bProtectionMatrix[j][i]) > 0;
+            wTotNumPcsEnPrise += ((*bAttackMatrix)[j][i] - wProtectionMatrix[j][i]) > 0;
+            bTotNumPcsEnPrise += ((*wAttackMatrix)[j][i] - bProtectionMatrix[j][i]) > 0;
 
-            wValPcsAttack += (!!wAttackMatrix[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
-            bValPcsAttack += (!!bAttackMatrix[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
+            wValPcsAttack += (!!(*wAttackMatrix)[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
+            bValPcsAttack += (!!(*bAttackMatrix)[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
             wValPcsProtect += (!!wProtectionMatrix[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
             bValPcsProtect += (!!bProtectionMatrix[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
         }
     }
+}
+
+int main(void)
+{
+    processBoardPosition(chessMatrix, &wAttackMatrix, &bAttackMatrix);
+
+    materialBalance(chessMatrix, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
 }
