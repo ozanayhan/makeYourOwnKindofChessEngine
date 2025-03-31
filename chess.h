@@ -40,6 +40,13 @@
 
 #define NOTHING 255
 
+#define VAL_SINGLE_SQUARE  0.1F
+#define VAL_ATTACKED_PIECE  0.1F
+#define VAL_PROTECTED_PIECE  0.1F
+#define VAL_ATTACKED_PIECE_VALUE  0.03F
+#define VAL_PROTECTED_PIECE_VALUE  0.03F
+
+
 /*
 unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WBISHOP2, WKNIGHT2, WROOK2},
                                    {WPAWN1, WPAWN2, WPAWN3, WPAWN4, WPAWN5, WPAWN6, WPAWN7, WPAWN8},
@@ -64,7 +71,9 @@ unsigned int xPositionArray[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
 
 unsigned int searchDimension[36] = {4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0};
-unsigned int ValPcs[36] = {5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
+unsigned int ValPcsPos[36] = {5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
+unsigned int ValPcs[36] = {5, 3, 3, 9, 1000, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 1000, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
+
 
 unsigned int wRook1PositionalControl[8][8] = { 0 };
 unsigned int wRook2PositionalControl[8][8] = { 0 };
@@ -285,3 +294,7 @@ int wMaterialLossCapture4 = 0;
 int wMaterialLossCapture5 = 0;
 int wMaterialLoss = 0;
 int wMaxMaterialLoss = 0;
+
+float positionEval = 0.0F;
+float materialEval = 0.0F;
+float overallEval = 0.0F;

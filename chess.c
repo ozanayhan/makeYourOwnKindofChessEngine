@@ -194,7 +194,7 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
     }
 }
 
-void materialBalance(unsigned int chessMatrix[8][8], unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5])
+void materialBalance(unsigned int chessMatrix[8][8], float (*materialEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5])
 {
     for (unsigned int j = 0; j < 8; j++)
     {
@@ -290,13 +290,15 @@ void materialBalance(unsigned int chessMatrix[8][8], unsigned int (*wAttackMatri
                 }
                 wMaterialLoss = findMax(wMaterialLossCapture1, wMaterialLossCapture2, wMaterialLossCapture3, wMaterialLossCapture4, wMaterialLossCapture5);
                 wMaterialLoss = wMaterialLoss > 0 ? 0 : wMaterialLoss;
-                wMaxMaterialLoss = wMaterialLoss > wMaxMaterialLoss ? wMaterialLoss : wMaxMaterialLoss;
+                wMaxMaterialLoss = wMaterialLoss < wMaxMaterialLoss ? wMaterialLoss : wMaxMaterialLoss;
             }
         }
     }
+
+    (*materialEval) = (float)wMaxMaterialGain - (float)wMaxMaterialLoss;
 }
 
-void processBoardPosition(unsigned int chessMatrix[8][8], unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8])
+void processBoardPosition(unsigned int chessMatrix[8][8], float (*positionEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8])
 {
     getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
     for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
@@ -468,17 +470,26 @@ void processBoardPosition(unsigned int chessMatrix[8][8], unsigned int (*wAttack
             wTotNumPcsEnPrise += ((*bAttackMatrix)[j][i] - wProtectionMatrix[j][i]) > 0;
             bTotNumPcsEnPrise += ((*wAttackMatrix)[j][i] - bProtectionMatrix[j][i]) > 0;
 
-            wValPcsAttack += (!!(*wAttackMatrix)[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
-            bValPcsAttack += (!!(*bAttackMatrix)[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
-            wValPcsProtect += (!!wProtectionMatrix[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
-            bValPcsProtect += (!!bProtectionMatrix[j][i]) * ValPcs[(chessMatrix[j][i]) - 1];
+            wValPcsAttack += (!!(*wAttackMatrix)[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
+            bValPcsAttack += (!!(*bAttackMatrix)[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
+            wValPcsProtect += (!!wProtectionMatrix[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
+            bValPcsProtect += (!!bProtectionMatrix[j][i]) * ValPcsPos[(chessMatrix[j][i]) - 1];
+
+
+            
         }
     }
+    (*positionEval) = (((float)wTotNumSqControlled - (float)bTotNumSqControlled) * VAL_SINGLE_SQUARE)  + 
+    (((float)wTotNumPcsAttacked - (float)bTotNumPcsAttacked) * VAL_ATTACKED_PIECE) + 
+    (((float)wTotNumPcsProtected - (float)bTotNumPcsProtected) * VAL_PROTECTED_PIECE) + 
+    (((float)wValPcsAttack - (float)bValPcsAttack) * VAL_ATTACKED_PIECE_VALUE) + 
+    (((float)wValPcsProtect - (float)bValPcsProtect) * VAL_PROTECTED_PIECE_VALUE);
 }
 
 int main(void)
 {
-    processBoardPosition(chessMatrix, &wAttackMatrix, &bAttackMatrix);
+    processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix);
 
-    materialBalance(chessMatrix, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
+    materialBalance(chessMatrix, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
+    overallEval = materialEval + positionEval;
 }
