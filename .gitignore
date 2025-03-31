@@ -1,0 +1,6 @@
+# Global ignore rules
+
+# executables
+*.exe
+*.dll
+
