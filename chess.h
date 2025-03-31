@@ -63,7 +63,7 @@ unsigned int xPositionArray[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
 
 unsigned int searchDimension[36] = {4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0};
-unsigned int ValPcs[36] = {5, 3, 3, 9, 1000, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 1000, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
+unsigned int ValPcs[36] = {5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
 
 unsigned int wRook1PositionalControl[8][8] = { 0 };
 unsigned int wRook2PositionalControl[8][8] = { 0 };
@@ -173,6 +173,10 @@ unsigned int bPositionalControl[8][8] = { 0 };
 unsigned int bAttackMatrix[8][8] = { 0 };
 unsigned int bProtectionMatrix[8][8] = { 0 };
 
+unsigned int ProtectionMapping[36][5] = { 0 };
+unsigned int AttackMapping[36][5] = { 0 };
+
+
 unsigned int wRook1xPosition;
 unsigned int wRook1yPosition;
 unsigned int wKnight1xPosition;
@@ -247,5 +251,7 @@ unsigned int bTotNumPcsProtected = 0;
 unsigned int bTotNumPcsAttacked = 0;
 unsigned int wTotNumPcsEnPrise = 0;
 unsigned int bTotNumPcsEnPrise = 0;
-unsigned int wValPcsEnPrise = 0;
-unsigned int bValPcsEnPrise = 0;
+unsigned int wValPcsAttack = 0;
+unsigned int bValPcsAttack = 0;
+unsigned int wValPcsProtect = 0;
+unsigned int bValPcsProtect = 0;
