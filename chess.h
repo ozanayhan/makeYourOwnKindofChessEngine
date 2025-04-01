@@ -38,6 +38,9 @@
 #define BPROMOTION1 35
 #define BPROMOTION2 36
 
+#define SHORT_CASTLE 37
+#define LONG_CASTLE 38
+
 #define NOTHING 255
 
 #define VAL_SINGLE_SQUARE  0.1F
@@ -57,8 +60,8 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WB
                                    {BPAWN1, BPAWN2, BPAWN3, BPAWN4, BPAWN5, BPAWN6, BPAWN7, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
 */
-unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, NOTHING, WQUEEN, WKING, NOTHING, WKNIGHT2, WROOK2},
-                                   {WPAWN1, WBISHOP1, WPAWN3, NOTHING, WPAWN5, WPAWN6, WBISHOP2, WPAWN8},
+unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, NOTHING, WQUEEN, WKING, NOTHING, NOTHING, WROOK2},
+                                   {WPAWN1, WBISHOP1, WPAWN3, WKNIGHT2, WPAWN5, WPAWN6, WBISHOP2, WPAWN8},
                                    {NOTHING, WPAWN2, NOTHING, WPAWN4, NOTHING, NOTHING, WPAWN7, NOTHING},
                                    {NOTHING, NOTHING, BQUEEN, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
@@ -75,6 +78,7 @@ unsigned int searchDimension[36] = {4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2,
 unsigned int ValPcsPos[36] = {5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
 unsigned int ValPcs[36] = {5, 3, 3, 9, 1000, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 1000, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
 
+char str[9] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h','\0'};
 
 unsigned int wRook1PositionalControl[8][8] = { 0 };
 unsigned int wRook2PositionalControl[8][8] = { 0 };
@@ -311,3 +315,6 @@ int wExchangeLoss = 0;
 float positionEval = 0.0F;
 float materialEval = 0.0F;
 float overallEval = 0.0F;
+
+unsigned int pawnXLoc;
+unsigned int pawnYLoc;

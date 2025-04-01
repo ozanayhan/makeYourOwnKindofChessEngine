@@ -72,6 +72,37 @@ void quickSort(int arr[], int low, int high)
     }
 }
 
+void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc) {
+    if (piecePlay == WROOK1 || piecePlay == WROOK2)
+    printf("R");
+    if (piecePlay == WKNIGHT1 || piecePlay == WKNIGHT2)
+    printf("N");
+    if (piecePlay == WBISHOP1 || piecePlay == WBISHOP2)
+    printf("B");
+    if (piecePlay == WQUEEN)
+    printf("Q");
+    if (piecePlay == WKING)
+    printf("K");
+    if (piecePlay == SHORT_CASTLE)
+    printf("O-O");
+    if (piecePlay == LONG_CASTLE)
+    printf("O-O-O");
+    if ((((*chessMatrix)[pieceDestYLoc][pieceDestXLoc]) != NOTHING) && piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE) {
+        if (piecePlay > WROOK2 && piecePlay < WPROMOTION1)
+        printf("%c", str[pieceXLoc]);
+        printf("x");
+    }
+    else if (piecePlay > WROOK2 && piecePlay < WPROMOTION1 && pieceXLoc != pieceDestXLoc) {
+        printf("%c", str[pieceXLoc]);
+        printf("x");
+    }
+    if (piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE) {
+        printf("%c", str[pieceDestXLoc]);
+        printf("%d", pieceDestYLoc + 1);
+    }
+    printf(" \n");
+}
+
 void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionArray)[36], unsigned int (*yPositionArray)[36])
 {
     for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
@@ -154,15 +185,14 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
             if (pieceAtPosition == NOTHING)
             {
                 (*PositionalControl)[yIndex][xIndex] = 1;
-                if (flgWhitePiece)
+                if (flgWhitePiece && !flgPawnPiece)
                 {
-                    printf("%d", iterationIndexW);
                     (*iterationArrayW)[0][(*iterationIndexW)] = pieces;
                     (*iterationArrayW)[1][(*iterationIndexW)] = xIndex;
                     (*iterationArrayW)[2][(*iterationIndexW)] = yIndex;
                     ++(*iterationIndexW);
                 }
-                else if (flgBlackPiece)
+                else if (flgBlackPiece  && !flgPawnPiece)
                 {
                     (*iterationArrayB)[0][(*iterationIndexB)] = pieces;
                     (*iterationArrayB)[1][(*iterationIndexB)] = xIndex;
@@ -512,7 +542,7 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
 
 int main(void)
 {
-
+    unsigned int previousMove = 0;
     processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayW, &iterationIndexW, &iterationArrayB, &iterationIndexB);
 
     materialBalance(chessMatrix, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
@@ -527,28 +557,60 @@ int main(void)
         }
     }
     getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
-    for (unsigned int i = 0; i < iterationIndexW; i++)
+    unsigned int movesIndex = iterationIndexW;
+    for (unsigned int pieces = WPAWN1; pieces <= WPAWN8; pieces++)
+    {
+        pawnXLoc = xPositionArray[pieces - 1];
+        pawnYLoc = yPositionArray[pieces - 1];
+        if (chessMatrix[pawnYLoc + 1][pawnXLoc] == NOTHING)
+        {
+            iterationArrayW[0][movesIndex] = pieces;
+            iterationArrayW[1][movesIndex] = pawnXLoc;
+            iterationArrayW[2][movesIndex] = pawnYLoc + 1;
+            ++movesIndex;
+        }
+        if ((chessMatrix[3][pawnXLoc] == NOTHING) && pawnYLoc == 1)
+        {
+            iterationArrayW[0][movesIndex] = pieces;
+            iterationArrayW[1][movesIndex] = pawnXLoc;
+            iterationArrayW[2][movesIndex] = 3;
+            ++movesIndex;
+        }
+    }
+    if (!bAttackMatrix[0][4] && !bAttackMatrix[0][5] && !bAttackMatrix[0][6] && chessMatrix[0][4] == WKING && chessMatrix[0][7] == WROOK2 && chessMatrix[0][5] == NOTHING && chessMatrix[0][6] == NOTHING)
+    {
+        iterationArrayW[0][movesIndex] = SHORT_CASTLE;
+        iterationArrayW[1][movesIndex] = NOTHING;
+        iterationArrayW[2][movesIndex] = NOTHING;
+        ++movesIndex;
+    }
+    if (!bAttackMatrix[0][2] && !bAttackMatrix[0][3] && !bAttackMatrix[0][4] && chessMatrix[0][4] == WKING && chessMatrix[0][0] == WROOK1 && chessMatrix[0][1] == NOTHING && chessMatrix[0][2] == NOTHING && chessMatrix[0][3] == NOTHING)
+    {
+        iterationArrayW[0][movesIndex] = LONG_CASTLE;
+        iterationArrayW[1][movesIndex] = NOTHING;
+        iterationArrayW[2][movesIndex] = NOTHING;
+        ++movesIndex;
+    }
+    for (unsigned int i = 0; i < movesIndex; i++)
     {
         iterationPieceW = iterationArrayW[0][i];
         iterationXLocW = iterationArrayW[1][i];
         iterationYLocW = iterationArrayW[2][i];
         iterationXOrgLocW = xPositionArray[iterationPieceW - 1];
         iterationYOrgLocW = yPositionArray[iterationPieceW - 1];
+        //chessNotation(&chessMatrix, iterationPieceW, iterationXOrgLocW, iterationYOrgLocW, iterationXLocW, iterationYLocW);
         if ((chessMatrix[iterationYLocW][iterationXLocW] >= WROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= WPROMOTION2))
         {
-            printf("Error, you canot take your own piece,\n");
             wExchangeGain = 0;
         }
         else if ((chessMatrix[iterationYLocW][iterationXLocW] >= BROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= BPROMOTION2))
         {
-            printf("Capture,\n");
             chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
             chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
             wExchangeGain = ValPcs[(chessMatrix[iterationYLocW][iterationXLocW]) - 1];
-
         }
-        else if (chessMatrix[iterationYLocW][iterationXLocW] == NOTHING) {
-            printf("Maneouvre,\n");
+        else if (chessMatrix[iterationYLocW][iterationXLocW] == NOTHING)
+        {
             chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
             chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
             wExchangeGain = 0;
