@@ -72,38 +72,43 @@ void quickSort(int arr[], int low, int high)
     }
 }
 
-void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc) {
+void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc)
+{
     printf("Move Played: ");
     if (piecePlay == WROOK1 || piecePlay == WROOK2)
-    printf("R");
+        printf("R");
     if (piecePlay == WKNIGHT1 || piecePlay == WKNIGHT2)
-    printf("N");
+        printf("N");
     if (piecePlay == WBISHOP1 || piecePlay == WBISHOP2)
-    printf("B");
+        printf("B");
     if (piecePlay == WQUEEN)
-    printf("Q");
+        printf("Q");
     if (piecePlay == WKING)
-    printf("K");
+        printf("K");
     if (piecePlay == SHORT_CASTLE)
-    printf("O-O");
+        printf("O-O");
     if (piecePlay == LONG_CASTLE)
-    printf("O-O-O");
-    if ((((*chessMatrix)[pieceDestYLoc][pieceDestXLoc]) != NOTHING) && piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE) {
+        printf("O-O-O");
+    if ((((*chessMatrix)[pieceDestYLoc][pieceDestXLoc]) != NOTHING) && piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE)
+    {
         if (piecePlay > WROOK2 && piecePlay < WPROMOTION1)
+            printf("%c", str[pieceXLoc]);
+        printf("x");
+    }
+    else if (piecePlay > WROOK2 && piecePlay < WPROMOTION1 && pieceXLoc != pieceDestXLoc)
+    {
         printf("%c", str[pieceXLoc]);
         printf("x");
     }
-    else if (piecePlay > WROOK2 && piecePlay < WPROMOTION1 && pieceXLoc != pieceDestXLoc) {
-        printf("%c", str[pieceXLoc]);
-        printf("x");
-    }
-    if (piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE) {
+    if (piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE)
+    {
         printf("%c", str[pieceDestXLoc]);
         printf("%d", pieceDestYLoc + 1);
     }
     printf(" \n");
 }
-void resetBoardMatrix(unsigned int (*BoardMatrix)[8][8]) {
+void resetBoardMatrix(unsigned int (*BoardMatrix)[8][8])
+{
     for (unsigned int j = 0; j < 8; j++)
     {
         for (unsigned int i = 0; i < 8; i++)
@@ -113,7 +118,8 @@ void resetBoardMatrix(unsigned int (*BoardMatrix)[8][8]) {
     }
 }
 
-void resetBoardMappings(unsigned int (*MappingMatrix)[36][5]) {
+void resetBoardMappings(unsigned int (*MappingMatrix)[36][5])
+{
     for (unsigned int j = 0; j < 36; j++)
     {
         for (unsigned int i = 0; i < 5; i++)
@@ -123,7 +129,8 @@ void resetBoardMappings(unsigned int (*MappingMatrix)[36][5]) {
     }
 }
 
-void resetEval(void) {
+void resetEval(void)
+{
     resetBoardMatrix(&bAttackMatrix);
     resetBoardMatrix(&wAttackMatrix);
     resetBoardMappings(&ProtectionMapping);
@@ -228,7 +235,6 @@ void resetEval(void) {
     resetBoardMatrix(&bPawn8ProtectionMatrix);
 }
 
-
 void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionArray)[36], unsigned int (*yPositionArray)[36])
 {
     for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
@@ -318,7 +324,7 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
                     (*iterationArrayW)[2][(*iterationIndexW)] = yIndex;
                     ++(*iterationIndexW);
                 }
-                else if (flgBlackPiece  && !flgPawnPiece)
+                else if (flgBlackPiece && !flgPawnPiece)
                 {
                     (*iterationArrayB)[0][(*iterationIndexB)] = pieces;
                     (*iterationArrayB)[1][(*iterationIndexB)] = xIndex;
@@ -338,7 +344,8 @@ void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, u
             }
             else if ((flgWhitePiece && (pieceAtPosition <= WPROMOTION2)) || (flgBlackPiece && (pieceAtPosition > WPROMOTION2)))
             {
-                if ((flgWhitePiece && pieceAtPosition != WKING) || (flgBlackPiece && pieceAtPosition != BKING)) {
+                if ((flgWhitePiece && pieceAtPosition != WKING) || (flgBlackPiece && pieceAtPosition != BKING))
+                {
                     (*ProtectionMatrix)[yIndex][xIndex] = pieceAtPosition;
                     i = 0;
                     while ((*ProtectionMapping)[(pieceAtPosition - 1)][i] && i < 6)
@@ -390,12 +397,14 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
     {
         for (unsigned int i = 0; i < 8; i++)
         {
-        if ((*chessMatrix)[j][i] >= WROOK1 && (*chessMatrix)[j][i] <= WPROMOTION2) {
-            wMaterialCount += ValPcs[((*chessMatrix)[j][i] - 1)];
-        }
-        if ((*chessMatrix)[j][i] >= BROOK1 && (*chessMatrix)[j][i] <= BPROMOTION2) {
-            bMaterialCount += ValPcs[((*chessMatrix)[j][i] - 1)];
-        }
+            if ((*chessMatrix)[j][i] >= WROOK1 && (*chessMatrix)[j][i] <= WPROMOTION2)
+            {
+                wMaterialCount += ValPcs[((*chessMatrix)[j][i] - 1)];
+            }
+            if ((*chessMatrix)[j][i] >= BROOK1 && (*chessMatrix)[j][i] <= BPROMOTION2)
+            {
+                bMaterialCount += ValPcs[((*chessMatrix)[j][i] - 1)];
+            }
 
             if ((*wAttackMatrix)[j][i])
             {
@@ -434,9 +443,9 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
                 {
                     wMaterialGainCapture1 = ValPcs[wAttackedPiece - 1];
                     wMaterialGainCapture2 = wMaterialGainCapture1 - (ProtectionArray[0] ? AttackArray[0] : 0) + ProtectionArray[0];
-                    wMaterialGainCapture3 = wMaterialGainCapture2 - (ProtectionArray[1] ? AttackArray[1] : 0)  + ProtectionArray[1];
-                    wMaterialGainCapture4 = wMaterialGainCapture3 - (ProtectionArray[2] ? AttackArray[2] : 0)  + ProtectionArray[2];
-                    wMaterialGainCapture5 = wMaterialGainCapture4 - (ProtectionArray[3] ? AttackArray[3] : 0)  + ProtectionArray[3];
+                    wMaterialGainCapture3 = wMaterialGainCapture2 - (ProtectionArray[1] ? AttackArray[1] : 0) + ProtectionArray[1];
+                    wMaterialGainCapture4 = wMaterialGainCapture3 - (ProtectionArray[2] ? AttackArray[2] : 0) + ProtectionArray[2];
+                    wMaterialGainCapture5 = wMaterialGainCapture4 - (ProtectionArray[3] ? AttackArray[3] : 0) + ProtectionArray[3];
                 }
                 wMaterialGain = findMin(wMaterialGainCapture1, wMaterialGainCapture2, wMaterialGainCapture3, wMaterialGainCapture4, wMaterialGainCapture5);
                 wMaterialGain = wMaterialGain < 0 ? 0 : wMaterialGain;
@@ -477,9 +486,9 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
                 {
                     wMaterialLossCapture1 = -ValPcs[bAttackedPiece - 1];
                     wMaterialLossCapture2 = wMaterialLossCapture1 + (ProtectionArray[0] ? AttackArray[0] : 0) - ProtectionArray[0];
-                    wMaterialLossCapture3 = wMaterialLossCapture2 + (ProtectionArray[1] ? AttackArray[1] : 0)- ProtectionArray[1];
+                    wMaterialLossCapture3 = wMaterialLossCapture2 + (ProtectionArray[1] ? AttackArray[1] : 0) - ProtectionArray[1];
                     wMaterialLossCapture4 = wMaterialLossCapture3 + (ProtectionArray[2] ? AttackArray[2] : 0) - ProtectionArray[2];
-                    wMaterialLossCapture5 = wMaterialLossCapture4 + (ProtectionArray[3] ? AttackArray[3] : 0)- ProtectionArray[3];
+                    wMaterialLossCapture5 = wMaterialLossCapture4 + (ProtectionArray[3] ? AttackArray[3] : 0) - ProtectionArray[3];
                 }
                 else
                 {
@@ -613,7 +622,6 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
         }
     }
 
-
     wTotNumSqControlled = 0;
     wTotNumPcsProtected = 0;
     wTotNumPcsAttacked = 0;
@@ -700,18 +708,17 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
                       (((float)wValPcsAttack - (float)bValPcsAttack) * VAL_ATTACKED_PIECE_VALUE) +
                       (((float)wValPcsProtect - (float)bValPcsProtect) * VAL_PROTECTED_PIECE_VALUE);
 
-    //printf("Number of Squares Controlled by White: %d\n", wTotNumSqControlled);
-    //printf("Bumber of Squares Controlled by Black: %d\n", bTotNumSqControlled);
-    //printf("Number of Black Pieces Attacked: %d\n", wTotNumPcsAttacked);
-    //printf("Number of White Pieces Attacked: %d\n", bTotNumPcsAttacked);
-    //printf("Number of White Pieces Protected: %d\n", wTotNumPcsProtected);
-    //printf("Number of Black Pieces Protected: %d\n", bTotNumPcsProtected);
-    //printf("Value of Black Pieces Attacked: %d\n", wValPcsAttack);
-    //printf("Value of White Pieces Attacked: %d\n", bValPcsAttack);
-    //printf("Value of White Pieces Protected: %d\n", wValPcsProtect);
-    //printf("Value of Black Pieces Protected: %d\n", bValPcsProtect);
+    // printf("Number of Squares Controlled by White: %d\n", wTotNumSqControlled);
+    // printf("Bumber of Squares Controlled by Black: %d\n", bTotNumSqControlled);
+    // printf("Number of Black Pieces Attacked: %d\n", wTotNumPcsAttacked);
+    // printf("Number of White Pieces Attacked: %d\n", bTotNumPcsAttacked);
+    // printf("Number of White Pieces Protected: %d\n", wTotNumPcsProtected);
+    // printf("Number of Black Pieces Protected: %d\n", bTotNumPcsProtected);
+    // printf("Value of Black Pieces Attacked: %d\n", wValPcsAttack);
+    // printf("Value of White Pieces Attacked: %d\n", bValPcsAttack);
+    // printf("Value of White Pieces Protected: %d\n", wValPcsProtect);
+    // printf("Value of Black Pieces Protected: %d\n", bValPcsProtect);
     printf("Position Evaluation: %f\n", *positionEval);
-
 }
 
 int main(void)
@@ -721,7 +728,6 @@ int main(void)
 
     materialBalance(&chessMatrix, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
     overallEval = materialEval + positionEval;
-
 
     getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
     unsigned int movesIndex = iterationIndexW;
@@ -759,10 +765,13 @@ int main(void)
         ++movesIndex;
     }
 
+    for (unsigned int m = 0; m < 36; m++)
+    {
+        xPositionArrayTemp[m] = xPositionArray[m];
+        yPositionArrayTemp[m] = yPositionArray[m];
+    }
 
-    
-
-    for (unsigned int i = 0; i < 2; i++) //movesIndex
+    for (unsigned int i = 0; i < movesIndex; i++) // movesIndex
     {
         resetEval();
         for (unsigned int n = 0; n < 8; n++)
@@ -773,11 +782,24 @@ int main(void)
                 chessMatrixTempB[n][m] = chessMatrix[n][m];
             }
         }
+        for (unsigned int n = 0; n < 3; n++)
+        {
+            for (unsigned int m = 0; m < 300; m++)
+            {
+                iterationArrayWTemp[n][m] = iterationArrayW[n][m];
+                iterationArrayBTemp[n][m] = iterationArrayB[n][m];
+            }
+        }
+
+
+
+        iterationIndexWTemp = iterationIndexW;
+        iterationIndexBTemp = iterationIndexB;
         iterationPieceW = iterationArrayW[0][i];
         iterationXLocW = iterationArrayW[1][i];
         iterationYLocW = iterationArrayW[2][i];
-        iterationXOrgLocW = xPositionArray[iterationPieceW - 1];
-        iterationYOrgLocW = yPositionArray[iterationPieceW - 1];
+        iterationXOrgLocW = xPositionArrayTemp[iterationPieceW - 1];
+        iterationYOrgLocW = yPositionArrayTemp[iterationPieceW - 1];
         chessNotation(&chessMatrix, iterationPieceW, iterationXOrgLocW, iterationYOrgLocW, iterationXLocW, iterationYLocW);
         if (iterationPieceW == SHORT_CASTLE)
         {
@@ -811,12 +833,11 @@ int main(void)
             chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
             chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
         }
-        processBoardPosition(chessMatrixTempW, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayW, &iterationIndexW, &iterationArrayB, &iterationIndexB);
+        processBoardPosition(chessMatrixTempW, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayWTemp, &iterationIndexWTemp, &iterationArrayBTemp, &iterationIndexBTemp);
 
         materialBalance(&chessMatrixTempW, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
         newEval = (float)materialEval + (float)positionEval;
         deltaEval = (float)newEval - (float)overallEval;
         printf("Delta Evaluation: %f\n", deltaEval);
     }
-
 }

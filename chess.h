@@ -73,6 +73,9 @@ unsigned int chessMatrixTempB[8][8] = { 0 };
 
 unsigned int xPositionArray[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
+unsigned int xPositionArrayTemp[36] = { NOTHING };
+unsigned int yPositionArrayTemp[36] = { NOTHING };
+
 
 unsigned int searchDimension[36] = {4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0};
 unsigned int ValPcsPos[36] = {5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 9, 18, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0};
@@ -193,8 +196,12 @@ unsigned int AttackMapping[36][5] = { 0 };
 
 unsigned int iterationArrayW[3][300];
 unsigned int iterationArrayB[3][300];
+unsigned int iterationArrayWTemp[3][300];
+unsigned int iterationArrayBTemp[3][300];
 unsigned int iterationIndexW = 0;
 unsigned int iterationIndexB = 0;
+unsigned int iterationIndexWTemp = 0;
+unsigned int iterationIndexBTemp = 0;
 
 unsigned int iterationPieceW = 0;
 unsigned int iterationXLocW = 0;
