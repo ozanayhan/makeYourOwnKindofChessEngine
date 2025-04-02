@@ -393,6 +393,8 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
 {
     wMaterialCount = 0;
     bMaterialCount = 0;
+    wMaxMaterialGain = 0;
+    wMaterialGain = 0;
     for (unsigned int j = 0; j < 8; j++)
     {
         for (unsigned int i = 0; i < 8; i++)
@@ -459,6 +461,8 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
             }
             wNumProtectingPiece = 0;
             bNumAttackingPiece = 0;
+            wMaxMaterialLoss = 0;
+            wMaterialLoss = 0;
             if ((*bAttackMatrix)[j][i])
             {
                 bAttackedPiece = (*chessMatrix)[j][i];
