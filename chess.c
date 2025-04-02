@@ -73,6 +73,7 @@ void quickSort(int arr[], int low, int high)
 }
 
 void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc) {
+    printf("Move Played: ");
     if (piecePlay == WROOK1 || piecePlay == WROOK2)
     printf("R");
     if (piecePlay == WKNIGHT1 || piecePlay == WKNIGHT2)
@@ -399,6 +400,8 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
             if ((*wAttackMatrix)[j][i])
             {
                 wAttackedPiece = (*chessMatrix)[j][i];
+                bNumProtectingPiece = 0;
+                wNumAttackingPiece = 0;
                 for (unsigned int k = 0; k < 5; k++)
                 {
                     protectionIndex = ((*ProtectionMapping)[wAttackedPiece - 1][k]);
@@ -445,7 +448,8 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
                 ProtectionArray[k] = 0;
                 AttackArray[k] = 0;
             }
-
+            wNumProtectingPiece = 0;
+            bNumAttackingPiece = 0;
             if ((*bAttackMatrix)[j][i])
             {
                 bAttackedPiece = (*chessMatrix)[j][i];
@@ -493,7 +497,7 @@ void materialBalance(unsigned int (*chessMatrix)[8][8], float(*materialEval), un
     }
     wMaterialBalance = (float)wMaterialCount - (float)bMaterialCount;
     (*materialEval) = wMaterialBalance + (float)wMaxMaterialGain + (float)wMaxMaterialLoss;
-    printf("%f\n", *materialEval);
+    printf("Material Evaluation: %f\n", *materialEval);
 }
 
 void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), unsigned int (*wAttackMatrix)[8][8], unsigned int (*bAttackMatrix)[8][8], unsigned int (*iterationArrayW)[3][300], unsigned int(*iterationIndexW), unsigned int (*iterationArrayB)[3][300], unsigned int(*iterationIndexB))
@@ -696,17 +700,17 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
                       (((float)wValPcsAttack - (float)bValPcsAttack) * VAL_ATTACKED_PIECE_VALUE) +
                       (((float)wValPcsProtect - (float)bValPcsProtect) * VAL_PROTECTED_PIECE_VALUE);
 
-    printf("Number of Squares Controlled by White: %d\n", wTotNumSqControlled);
-    printf("Bumber of Squares Controlled by Black: %d\n", bTotNumSqControlled);
-    printf("Number of Black Pieces Attacked: %d\n", wTotNumPcsAttacked);
-    printf("Number of White Pieces Attacked: %d\n", bTotNumPcsAttacked);
-    printf("Number of White Pieces Protected: %d\n", wTotNumPcsProtected);
-    printf("Number of Black Pieces Protected: %d\n", bTotNumPcsProtected);
-    printf("Value of Black Pieces Attacked: %d\n", wValPcsAttack);
-    printf("Value of White Pieces Attacked: %d\n", bValPcsAttack);
-    printf("Value of White Pieces Protected: %d\n", wValPcsProtect);
-    printf("Value of Black Pieces Protected: %d\n", bValPcsProtect);
-    printf("%f\n", *positionEval);
+    //printf("Number of Squares Controlled by White: %d\n", wTotNumSqControlled);
+    //printf("Bumber of Squares Controlled by Black: %d\n", bTotNumSqControlled);
+    //printf("Number of Black Pieces Attacked: %d\n", wTotNumPcsAttacked);
+    //printf("Number of White Pieces Attacked: %d\n", bTotNumPcsAttacked);
+    //printf("Number of White Pieces Protected: %d\n", wTotNumPcsProtected);
+    //printf("Number of Black Pieces Protected: %d\n", bTotNumPcsProtected);
+    //printf("Value of Black Pieces Attacked: %d\n", wValPcsAttack);
+    //printf("Value of White Pieces Attacked: %d\n", bValPcsAttack);
+    //printf("Value of White Pieces Protected: %d\n", wValPcsProtect);
+    //printf("Value of Black Pieces Protected: %d\n", bValPcsProtect);
+    printf("Position Evaluation: %f\n", *positionEval);
 
 }
 
@@ -756,10 +760,11 @@ int main(void)
     }
 
 
-    resetEval();
+    
 
-    for (unsigned int i = 3; i < 4; i++) //movesIndex
+    for (unsigned int i = 0; i < 2; i++) //movesIndex
     {
+        resetEval();
         for (unsigned int n = 0; n < 8; n++)
         {
             for (unsigned int m = 0; m < 8; m++)
@@ -795,26 +800,23 @@ int main(void)
         {
             chessMatrixTempW[iterationYLocW][iterationXLocW] = WPROMOTION1;
             chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
-            wExchangeGain = 8;
         }
         else if ((chessMatrix[iterationYLocW][iterationXLocW] >= BROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= BPROMOTION2))
         {
             chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
             chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
-            wExchangeGain = ValPcs[(chessMatrix[iterationYLocW][iterationXLocW]) - 1];
         }
         else if (chessMatrix[iterationYLocW][iterationXLocW] == NOTHING)
         {
             chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
             chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
-            wExchangeGain = 0;
         }
         processBoardPosition(chessMatrixTempW, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayW, &iterationIndexW, &iterationArrayB, &iterationIndexB);
 
         materialBalance(&chessMatrixTempW, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
         newEval = (float)materialEval + (float)positionEval;
-        deltaEval = (float)newEval - (float)overallEval + (float)wExchangeGain;
-        printf("%f\n", deltaEval);
+        deltaEval = (float)newEval - (float)overallEval;
+        printf("Delta Evaluation: %f\n", deltaEval);
     }
 
 }
