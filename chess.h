@@ -38,8 +38,10 @@
 #define BPROMOTION1 35
 #define BPROMOTION2 36
 
-#define SHORT_CASTLE 37
-#define LONG_CASTLE 38
+#define SHORT_CASTLE_W 37
+#define LONG_CASTLE_W 38
+#define SHORT_CASTLE_B 39
+#define LONG_CASTLE_B 40
 
 #define NOTHING 255
 
@@ -344,6 +346,12 @@ unsigned int blackBestMoveXOrgLocB;
 unsigned int blackBestMoveYOrgLocB;
 unsigned int blackBestMoveXLocB;
 unsigned int blackBestMoveYLocB;
+
+unsigned int blackBestMoveforWBMPieceB;
+unsigned int blackBestMoveforWBMXOrgLocB;
+unsigned int blackBestMoveforWBMYOrgLocB;
+unsigned int blackBestMoveforWBMXLocB;
+unsigned int blackBestMoveforWBMYLocB;
 
 unsigned int whiteBestMovePieceW;
 unsigned int whiteBestMoveXOrgLocW;

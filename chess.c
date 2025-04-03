@@ -72,6 +72,65 @@ void quickSort(int arr[], int low, int high)
     }
 }
 
+void updateChessMatrix(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc)
+{
+    if (piecePlay == SHORT_CASTLE_W)
+    {
+        (*chessMatrix)[0][4] = NOTHING;
+        (*chessMatrix)[0][5] = WROOK2;
+        (*chessMatrix)[0][6] = WKING;
+        (*chessMatrix)[0][7] = NOTHING;
+    }
+    else if (piecePlay == LONG_CASTLE_W)
+    {
+        (*chessMatrix)[0][0] = NOTHING;
+        (*chessMatrix)[0][1] = NOTHING;
+        (*chessMatrix)[0][2] = WKING;
+        (*chessMatrix)[0][3] = WROOK1;
+        (*chessMatrix)[0][4] = NOTHING;
+    }
+    if (piecePlay == SHORT_CASTLE_B)
+    {
+        (*chessMatrix)[7][4] = NOTHING;
+        (*chessMatrix)[7][5] = BROOK2;
+        (*chessMatrix)[7][6] = BKING;
+        (*chessMatrix)[7][7] = NOTHING;
+    }
+    else if (piecePlay == LONG_CASTLE_B)
+    {
+        (*chessMatrix)[7][0] = NOTHING;
+        (*chessMatrix)[7][1] = NOTHING;
+        (*chessMatrix)[7][2] = BKING;
+        (*chessMatrix)[7][3] = BROOK1;
+        (*chessMatrix)[7][4] = NOTHING;
+    }
+    else if (piecePlay > WROOK2 && piecePlay < WPROMOTION1 && pieceDestYLoc == 7)
+    {
+        (*chessMatrix)[pieceDestYLoc][pieceDestXLoc] = WPROMOTION1;
+        (*chessMatrix)[pieceYLoc][pieceXLoc] = NOTHING;
+    }
+    else if (piecePlay > BROOK2 && piecePlay < BPROMOTION1 && pieceDestYLoc == 0)
+    {
+        (*chessMatrix)[pieceDestYLoc][pieceDestXLoc] = BPROMOTION1;
+        (*chessMatrix)[pieceYLoc][pieceXLoc] = NOTHING;
+    }
+    else if (((*chessMatrix)[pieceDestYLoc][pieceDestXLoc] >= BROOK1) && ((*chessMatrix)[pieceDestYLoc][pieceDestXLoc] <= BPROMOTION2))
+    {
+        (*chessMatrix)[pieceDestYLoc][pieceDestXLoc] = piecePlay;
+        (*chessMatrix)[pieceYLoc][pieceXLoc] = NOTHING;
+    }
+    else if (((*chessMatrix)[pieceDestYLoc][pieceDestXLoc] >= WROOK1) && ((*chessMatrix)[pieceDestYLoc][pieceDestXLoc] <= WPROMOTION2))
+    {
+        (*chessMatrix)[pieceDestYLoc][pieceDestXLoc] = piecePlay;
+        (*chessMatrix)[pieceYLoc][pieceXLoc] = NOTHING;
+    }
+    else if ((*chessMatrix)[pieceDestYLoc][pieceDestXLoc] == NOTHING)
+    {
+        (*chessMatrix)[pieceDestYLoc][pieceDestXLoc] = piecePlay;
+        (*chessMatrix)[pieceYLoc][pieceXLoc] = NOTHING;
+    }
+}
+
 void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc)
 {
     printf("Move Played: ");
@@ -85,11 +144,11 @@ void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, un
         printf("Q");
     if (piecePlay == WKING || piecePlay == BKING)
         printf("K");
-    if (piecePlay == SHORT_CASTLE)
+    if (piecePlay == SHORT_CASTLE_W || piecePlay == SHORT_CASTLE_B)
         printf("O-O");
-    if (piecePlay == LONG_CASTLE)
+    if (piecePlay == LONG_CASTLE_W || piecePlay == LONG_CASTLE_B)
         printf("O-O-O");
-    if ((((*chessMatrix)[pieceDestYLoc][pieceDestXLoc]) != NOTHING) && piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE)
+    if ((((*chessMatrix)[pieceDestYLoc][pieceDestXLoc]) != NOTHING) && piecePlay != SHORT_CASTLE_W && piecePlay != LONG_CASTLE_W && piecePlay != SHORT_CASTLE_B && piecePlay != LONG_CASTLE_B)
     {
         if ((piecePlay > WROOK2 && piecePlay < WPROMOTION1) || (piecePlay > BROOK2 && piecePlay < BPROMOTION1))
             printf("%c", str[pieceXLoc]);
@@ -100,7 +159,7 @@ void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, un
         printf("%c", str[pieceXLoc]);
         printf("x");
     }
-    if (piecePlay != SHORT_CASTLE && piecePlay != LONG_CASTLE)
+    if (piecePlay != SHORT_CASTLE_W && piecePlay != LONG_CASTLE_W && piecePlay != SHORT_CASTLE_B && piecePlay != LONG_CASTLE_B)
     {
         printf("%c", str[pieceDestXLoc]);
         printf("%d", pieceDestYLoc + 1);
@@ -728,263 +787,273 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
 int main(void)
 {
     unsigned int previousMove = 0;
-    processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayW, &iterationIndexW, &iterationArrayB, &iterationIndexB);
-
-    materialBalance(&chessMatrix, &chessMatrix, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
-    overallEval = materialEval + positionEval;
-
-    getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
-    unsigned int movesIndexW = iterationIndexW;
-    for (unsigned int pieces = WPAWN1; pieces <= WPAWN8; pieces++)
+    for (unsigned int t = 0; t < 10; t++)
     {
-        pawnXLoc = xPositionArray[pieces - 1];
-        pawnYLoc = yPositionArray[pieces - 1];
-        if (chessMatrix[pawnYLoc + 1][pawnXLoc] == NOTHING)
-        {
-            iterationArrayW[0][movesIndexW] = pieces;
-            iterationArrayW[1][movesIndexW] = pawnXLoc;
-            iterationArrayW[2][movesIndexW] = pawnYLoc + 1;
-            ++movesIndexW;
-        }
-        if ((chessMatrix[3][pawnXLoc] == NOTHING) && pawnYLoc == 1)
-        {
-            iterationArrayW[0][movesIndexW] = pieces;
-            iterationArrayW[1][movesIndexW] = pawnXLoc;
-            iterationArrayW[2][movesIndexW] = 3;
-            ++movesIndexW;
-        }
-    }
-    if (!bAttackMatrix[0][4] && !bAttackMatrix[0][5] && !bAttackMatrix[0][6] && chessMatrix[0][4] == WKING && chessMatrix[0][7] == WROOK2 && chessMatrix[0][5] == NOTHING && chessMatrix[0][6] == NOTHING)
-    {
-        iterationArrayW[0][movesIndexW] = SHORT_CASTLE;
-        iterationArrayW[1][movesIndexW] = NOTHING;
-        iterationArrayW[2][movesIndexW] = NOTHING;
-        ++movesIndexW;
-    }
-    if (!bAttackMatrix[0][2] && !bAttackMatrix[0][3] && !bAttackMatrix[0][4] && chessMatrix[0][4] == WKING && chessMatrix[0][0] == WROOK1 && chessMatrix[0][1] == NOTHING && chessMatrix[0][2] == NOTHING && chessMatrix[0][3] == NOTHING)
-    {
-        iterationArrayW[0][movesIndexW] = LONG_CASTLE;
-        iterationArrayW[1][movesIndexW] = NOTHING;
-        iterationArrayW[2][movesIndexW] = NOTHING;
-        ++movesIndexW;
-    }
 
-    for (unsigned int m = 0; m < 36; m++)
-    {
-        xPositionArrayTemp[m] = xPositionArray[m];
-        yPositionArrayTemp[m] = yPositionArray[m];
-    }
+        processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayW, &iterationIndexW, &iterationArrayB, &iterationIndexB);
 
-    for (unsigned int i = 0; i < movesIndexW; i++) // movesIndexW
-    {
-        resetEval();
-        newEval = 0.0F;
-        blackBestMoveEval = 1100.0F;
-        for (unsigned int n = 0; n < 8; n++)
-        {
-            for (unsigned int m = 0; m < 8; m++)
-            {
-                chessMatrixTempW[n][m] = chessMatrix[n][m];
-            }
-        }
-        for (unsigned int n = 0; n < 3; n++)
-        {
-            for (unsigned int m = 0; m < 300; m++)
-            {
-                iterationArrayWTemp[n][m] = iterationArrayW[n][m];
-            }
-        }
+        materialBalance(&chessMatrix, &chessMatrix, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
+        overallEval = materialEval + positionEval;
 
-        iterationIndexWTemp = iterationIndexW;
-        iterationPieceW = iterationArrayW[0][i];
-        iterationXLocW = iterationArrayW[1][i];
-        iterationYLocW = iterationArrayW[2][i];
-        iterationXOrgLocW = xPositionArrayTemp[iterationPieceW - 1];
-        iterationYOrgLocW = yPositionArrayTemp[iterationPieceW - 1];
-        // chessNotation(&chessMatrix, iterationPieceW, iterationXOrgLocW, iterationYOrgLocW, iterationXLocW, iterationYLocW);
-        if (iterationPieceW == SHORT_CASTLE)
-        {
-            chessMatrixTempW[0][4] = NOTHING;
-            chessMatrixTempW[0][5] = WROOK2;
-            chessMatrixTempW[0][6] = WKING;
-            chessMatrixTempW[0][7] = NOTHING;
-            wExchangeGain = 0;
-        }
-        else if (iterationPieceW == LONG_CASTLE)
-        {
-            chessMatrixTempW[0][0] = NOTHING;
-            chessMatrixTempW[0][1] = NOTHING;
-            chessMatrixTempW[0][2] = WKING;
-            chessMatrixTempW[0][3] = WROOK1;
-            chessMatrixTempW[0][4] = NOTHING;
-            wExchangeGain = 0;
-        }
-        else if (iterationPieceW > WROOK2 && iterationPieceW < WPROMOTION1 && iterationYLocW == 7)
-        {
-            chessMatrixTempW[iterationYLocW][iterationXLocW] = WPROMOTION1;
-            chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
-        }
-        else if ((chessMatrix[iterationYLocW][iterationXLocW] >= BROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= BPROMOTION2))
-        {
-            chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
-            chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
-        }
-        else if (chessMatrix[iterationYLocW][iterationXLocW] == NOTHING)
-        {
-            chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
-            chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
-        }
-
-        for (unsigned int n = 0; n < 3; n++)
-        {
-            for (unsigned int m = 0; m < 300; m++)
-            {
-                iterationArrayBTemp[n][m] = 0;
-            }
-        }
-        processBoardPosition(chessMatrixTempW, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayWTemp, &iterationIndexWTemp, &iterationArrayBTemp, &iterationIndexBTemp);
-
-        unsigned int movesIndexB = iterationIndexBTemp;
-        for (unsigned int pieces = BPAWN1; pieces <= BPAWN8; pieces++)
+        getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
+        unsigned int movesIndexW = iterationIndexW;
+        for (unsigned int pieces = WPAWN1; pieces <= WPAWN8; pieces++)
         {
             pawnXLoc = xPositionArray[pieces - 1];
             pawnYLoc = yPositionArray[pieces - 1];
-            if (chessMatrix[pawnYLoc - 1][pawnXLoc] == NOTHING)
+            if (chessMatrix[pawnYLoc + 1][pawnXLoc] == NOTHING)
             {
-                iterationArrayBTemp[0][movesIndexB] = pieces;
-                iterationArrayBTemp[1][movesIndexB] = pawnXLoc;
-                iterationArrayBTemp[2][movesIndexB] = pawnYLoc - 1;
-                ++movesIndexB;
+                iterationArrayW[0][movesIndexW] = pieces;
+                iterationArrayW[1][movesIndexW] = pawnXLoc;
+                iterationArrayW[2][movesIndexW] = pawnYLoc + 1;
+                ++movesIndexW;
             }
-            if ((chessMatrix[4][pawnXLoc] == NOTHING) && pawnYLoc == 6)
+            if ((chessMatrix[3][pawnXLoc] == NOTHING) && pawnYLoc == 1)
             {
-                iterationArrayBTemp[0][movesIndexB] = pieces;
-                iterationArrayBTemp[1][movesIndexB] = pawnXLoc;
-                iterationArrayBTemp[2][movesIndexB] = 4;
-                ++movesIndexB;
+                iterationArrayW[0][movesIndexW] = pieces;
+                iterationArrayW[1][movesIndexW] = pawnXLoc;
+                iterationArrayW[2][movesIndexW] = 3;
+                ++movesIndexW;
             }
         }
-        if (!wAttackMatrix[7][4] && !wAttackMatrix[7][5] && !wAttackMatrix[7][6] && chessMatrix[7][4] == BKING && chessMatrix[7][7] == BROOK2 && chessMatrix[7][5] == NOTHING && chessMatrix[7][6] == NOTHING)
+        if (!bAttackMatrix[0][4] && !bAttackMatrix[0][5] && !bAttackMatrix[0][6] && chessMatrix[0][4] == WKING && chessMatrix[0][7] == WROOK2 && chessMatrix[0][5] == NOTHING && chessMatrix[0][6] == NOTHING)
         {
-            iterationArrayBTemp[0][movesIndexB] = SHORT_CASTLE;
-            iterationArrayBTemp[1][movesIndexB] = NOTHING;
-            iterationArrayBTemp[2][movesIndexB] = NOTHING;
-            ++movesIndexB;
+            iterationArrayW[0][movesIndexW] = SHORT_CASTLE_W;
+            iterationArrayW[1][movesIndexW] = NOTHING;
+            iterationArrayW[2][movesIndexW] = NOTHING;
+            ++movesIndexW;
         }
-        if (!wAttackMatrix[7][2] && !wAttackMatrix[7][3] && !wAttackMatrix[7][4] && chessMatrix[7][4] == BKING && chessMatrix[7][0] == BROOK1 && chessMatrix[7][1] == NOTHING && chessMatrix[7][2] == NOTHING && chessMatrix[7][3] == NOTHING)
+        if (!bAttackMatrix[0][2] && !bAttackMatrix[0][3] && !bAttackMatrix[0][4] && chessMatrix[0][4] == WKING && chessMatrix[0][0] == WROOK1 && chessMatrix[0][1] == NOTHING && chessMatrix[0][2] == NOTHING && chessMatrix[0][3] == NOTHING)
         {
-            iterationArrayBTemp[0][movesIndexB] = LONG_CASTLE;
-            iterationArrayBTemp[1][movesIndexB] = NOTHING;
-            iterationArrayBTemp[2][movesIndexB] = NOTHING;
-            ++movesIndexB;
+            iterationArrayW[0][movesIndexW] = LONG_CASTLE_W;
+            iterationArrayW[1][movesIndexW] = NOTHING;
+            iterationArrayW[2][movesIndexW] = NOTHING;
+            ++movesIndexW;
         }
 
         for (unsigned int m = 0; m < 36; m++)
         {
-            xPositionArrayTemp2[m] = xPositionArrayTemp[m];
-            yPositionArrayTemp2[m] = yPositionArrayTemp[m];
+            xPositionArrayTemp[m] = xPositionArray[m];
+            yPositionArrayTemp[m] = yPositionArray[m];
         }
 
-        for (unsigned int j = 0; j < movesIndexB; j++) // movesIndexB
+        for (unsigned int i = 0; i < movesIndexW; i++) // movesIndexW
         {
             resetEval();
+            newEval = 0.0F;
+            blackBestMoveEval = 1100.0F;
             for (unsigned int n = 0; n < 8; n++)
             {
                 for (unsigned int m = 0; m < 8; m++)
                 {
-                    chessMatrixTempB[n][m] = chessMatrixTempW[n][m];
+                    chessMatrixTempW[n][m] = chessMatrix[n][m];
                 }
             }
             for (unsigned int n = 0; n < 3; n++)
             {
                 for (unsigned int m = 0; m < 300; m++)
                 {
-                    iterationArrayBTemp2[n][m] = iterationArrayBTemp[n][m];
+                    iterationArrayWTemp[n][m] = iterationArrayW[n][m];
                 }
             }
 
-            iterationIndexBTemp2 = iterationIndexBTemp;
-            iterationPieceB = iterationArrayBTemp[0][j];
-            iterationXLocB = iterationArrayBTemp[1][j];
-            iterationYLocB = iterationArrayBTemp[2][j];
-            iterationXOrgLocB = xPositionArrayTemp2[iterationPieceB - 1];
-            iterationYOrgLocB = yPositionArrayTemp2[iterationPieceB - 1];
-            // chessNotation(&chessMatrixTempW, iterationPieceB, iterationXOrgLocB, iterationYOrgLocB, iterationXLocB, iterationYLocB);
+            iterationIndexWTemp = iterationIndexW;
+            iterationPieceW = iterationArrayW[0][i];
+            iterationXLocW = iterationArrayW[1][i];
+            iterationYLocW = iterationArrayW[2][i];
+            iterationXOrgLocW = xPositionArrayTemp[iterationPieceW - 1];
+            iterationYOrgLocW = yPositionArrayTemp[iterationPieceW - 1];
+            // chessNotation(&chessMatrix, iterationPieceW, iterationXOrgLocW, iterationYOrgLocW, iterationXLocW, iterationYLocW);
+            if (iterationPieceW == SHORT_CASTLE_W)
+            {
+                chessMatrixTempW[0][4] = NOTHING;
+                chessMatrixTempW[0][5] = WROOK2;
+                chessMatrixTempW[0][6] = WKING;
+                chessMatrixTempW[0][7] = NOTHING;
+            }
+            else if (iterationPieceW == LONG_CASTLE_W)
+            {
+                chessMatrixTempW[0][0] = NOTHING;
+                chessMatrixTempW[0][1] = NOTHING;
+                chessMatrixTempW[0][2] = WKING;
+                chessMatrixTempW[0][3] = WROOK1;
+                chessMatrixTempW[0][4] = NOTHING;
+            }
+            else if (iterationPieceW > WROOK2 && iterationPieceW < WPROMOTION1 && iterationYLocW == 7)
+            {
+                chessMatrixTempW[iterationYLocW][iterationXLocW] = WPROMOTION1;
+                chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
+            }
+            else if ((chessMatrix[iterationYLocW][iterationXLocW] >= BROOK1) && (chessMatrix[iterationYLocW][iterationXLocW] <= BPROMOTION2))
+            {
+                chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
+                chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
+            }
+            else if (chessMatrix[iterationYLocW][iterationXLocW] == NOTHING)
+            {
+                chessMatrixTempW[iterationYLocW][iterationXLocW] = iterationPieceW;
+                chessMatrixTempW[iterationYOrgLocW][iterationXOrgLocW] = NOTHING;
+            }
 
-            if (iterationPieceB == SHORT_CASTLE)
+            for (unsigned int n = 0; n < 3; n++)
             {
-                chessMatrixTempB[7][4] = NOTHING;
-                chessMatrixTempB[7][5] = BROOK2;
-                chessMatrixTempB[7][6] = BKING;
-                chessMatrixTempB[7][7] = NOTHING;
+                for (unsigned int m = 0; m < 300; m++)
+                {
+                    iterationArrayBTemp[n][m] = 0;
+                }
             }
-            else if (iterationPieceB == LONG_CASTLE)
+            processBoardPosition(chessMatrixTempW, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayWTemp, &iterationIndexWTemp, &iterationArrayBTemp, &iterationIndexBTemp);
+
+            unsigned int movesIndexB = iterationIndexBTemp;
+            for (unsigned int pieces = BPAWN1; pieces <= BPAWN8; pieces++)
             {
-                chessMatrixTempB[7][0] = NOTHING;
-                chessMatrixTempB[7][1] = NOTHING;
-                chessMatrixTempB[7][2] = BKING;
-                chessMatrixTempB[7][3] = BROOK1;
-                chessMatrixTempB[7][4] = NOTHING;
+                pawnXLoc = xPositionArray[pieces - 1];
+                pawnYLoc = yPositionArray[pieces - 1];
+                if (chessMatrix[pawnYLoc - 1][pawnXLoc] == NOTHING)
+                {
+                    iterationArrayBTemp[0][movesIndexB] = pieces;
+                    iterationArrayBTemp[1][movesIndexB] = pawnXLoc;
+                    iterationArrayBTemp[2][movesIndexB] = pawnYLoc - 1;
+                    ++movesIndexB;
+                }
+                if ((chessMatrix[4][pawnXLoc] == NOTHING) && pawnYLoc == 6)
+                {
+                    iterationArrayBTemp[0][movesIndexB] = pieces;
+                    iterationArrayBTemp[1][movesIndexB] = pawnXLoc;
+                    iterationArrayBTemp[2][movesIndexB] = 4;
+                    ++movesIndexB;
+                }
             }
-            else if (iterationPieceB > BROOK2 && iterationPieceB < BPROMOTION1 && iterationYLocB == 1)
+            if (!wAttackMatrix[7][4] && !wAttackMatrix[7][5] && !wAttackMatrix[7][6] && chessMatrix[7][4] == BKING && chessMatrix[7][7] == BROOK2 && chessMatrix[7][5] == NOTHING && chessMatrix[7][6] == NOTHING)
             {
-                chessMatrixTempB[iterationYLocB][iterationXLocB] = BPROMOTION1;
-                chessMatrixTempB[iterationYOrgLocB][iterationXOrgLocB] = NOTHING;
+                iterationArrayBTemp[0][movesIndexB] = SHORT_CASTLE_B;
+                iterationArrayBTemp[1][movesIndexB] = NOTHING;
+                iterationArrayBTemp[2][movesIndexB] = NOTHING;
+                ++movesIndexB;
             }
-            else if ((chessMatrixTempW[iterationYLocB][iterationXLocB] >= WROOK1) && (chessMatrixTempW[iterationYLocW][iterationXLocW] <= WPROMOTION2))
+            if (!wAttackMatrix[7][2] && !wAttackMatrix[7][3] && !wAttackMatrix[7][4] && chessMatrix[7][4] == BKING && chessMatrix[7][0] == BROOK1 && chessMatrix[7][1] == NOTHING && chessMatrix[7][2] == NOTHING && chessMatrix[7][3] == NOTHING)
             {
-                chessMatrixTempB[iterationYLocB][iterationXLocB] = iterationPieceB;
-                chessMatrixTempB[iterationYOrgLocB][iterationXOrgLocB] = NOTHING;
-            }
-            else if (chessMatrixTempW[iterationYLocB][iterationXLocB] == NOTHING)
-            {
-                chessMatrixTempB[iterationYLocB][iterationXLocB] = iterationPieceB;
-                chessMatrixTempB[iterationYOrgLocB][iterationXOrgLocB] = NOTHING;
+                iterationArrayBTemp[0][movesIndexB] = LONG_CASTLE_B;
+                iterationArrayBTemp[1][movesIndexB] = NOTHING;
+                iterationArrayBTemp[2][movesIndexB] = NOTHING;
+                ++movesIndexB;
             }
 
-            processBoardPosition(chessMatrixTempB, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayWTemp, &iterationIndexWTemp, &iterationArrayBTemp2, &iterationIndexBTemp2);
-
-            materialBalance(&chessMatrixTempB, &chessMatrixTempB, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
-            newEval = (float)materialEval + (float)positionEval;
-
-            if (newEval < blackBestMoveEval)
+            for (unsigned int m = 0; m < 36; m++)
             {
-                blackBestMoveEval = newEval;
-                blackBestMoveIndex = j;
+                xPositionArrayTemp2[m] = xPositionArrayTemp[m];
+                yPositionArrayTemp2[m] = yPositionArrayTemp[m];
+            }
+
+            for (unsigned int j = 0; j < movesIndexB; j++) // movesIndexB
+            {
+                resetEval();
+                for (unsigned int n = 0; n < 8; n++)
+                {
+                    for (unsigned int m = 0; m < 8; m++)
+                    {
+                        chessMatrixTempB[n][m] = chessMatrixTempW[n][m];
+                    }
+                }
+                for (unsigned int n = 0; n < 3; n++)
+                {
+                    for (unsigned int m = 0; m < 300; m++)
+                    {
+                        iterationArrayBTemp2[n][m] = iterationArrayBTemp[n][m];
+                    }
+                }
+
+                iterationIndexBTemp2 = iterationIndexBTemp;
+                iterationPieceB = iterationArrayBTemp[0][j];
+                iterationXLocB = iterationArrayBTemp[1][j];
+                iterationYLocB = iterationArrayBTemp[2][j];
+                iterationXOrgLocB = xPositionArrayTemp2[iterationPieceB - 1];
+                iterationYOrgLocB = yPositionArrayTemp2[iterationPieceB - 1];
                 // chessNotation(&chessMatrixTempW, iterationPieceB, iterationXOrgLocB, iterationYOrgLocB, iterationXLocB, iterationYLocB);
-                // deltaEval = (float)newEval - (float)overallEval;
+
+                if (iterationPieceB == SHORT_CASTLE_B)
+                {
+                    chessMatrixTempB[7][4] = NOTHING;
+                    chessMatrixTempB[7][5] = BROOK2;
+                    chessMatrixTempB[7][6] = BKING;
+                    chessMatrixTempB[7][7] = NOTHING;
+                }
+                else if (iterationPieceB == LONG_CASTLE_B)
+                {
+                    chessMatrixTempB[7][0] = NOTHING;
+                    chessMatrixTempB[7][1] = NOTHING;
+                    chessMatrixTempB[7][2] = BKING;
+                    chessMatrixTempB[7][3] = BROOK1;
+                    chessMatrixTempB[7][4] = NOTHING;
+                }
+                else if (iterationPieceB > BROOK2 && iterationPieceB < BPROMOTION1 && iterationYLocB == 0)
+                {
+                    chessMatrixTempB[iterationYLocB][iterationXLocB] = BPROMOTION1;
+                    chessMatrixTempB[iterationYOrgLocB][iterationXOrgLocB] = NOTHING;
+                }
+                else if ((chessMatrixTempW[iterationYLocB][iterationXLocB] >= WROOK1) && (chessMatrixTempW[iterationYLocW][iterationXLocW] <= WPROMOTION2))
+                {
+                    chessMatrixTempB[iterationYLocB][iterationXLocB] = iterationPieceB;
+                    chessMatrixTempB[iterationYOrgLocB][iterationXOrgLocB] = NOTHING;
+                }
+                else if (chessMatrixTempW[iterationYLocB][iterationXLocB] == NOTHING)
+                {
+                    chessMatrixTempB[iterationYLocB][iterationXLocB] = iterationPieceB;
+                    chessMatrixTempB[iterationYOrgLocB][iterationXOrgLocB] = NOTHING;
+                }
+
+                processBoardPosition(chessMatrixTempB, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayWTemp, &iterationIndexWTemp, &iterationArrayBTemp2, &iterationIndexBTemp2);
+
+                materialBalance(&chessMatrixTempB, &chessMatrixTempB, &materialEval, &wAttackMatrix, &bAttackMatrix, &ProtectionMapping, &AttackMapping);
+                newEval = (float)materialEval + (float)positionEval;
+
+                if (newEval < blackBestMoveEval)
+                {
+                    blackBestMoveEval = newEval;
+                    blackBestMoveIndex = j;
+                    // chessNotation(&chessMatrixTempW, iterationPieceB, iterationXOrgLocB, iterationYOrgLocB, iterationXLocB, iterationYLocB);
+                    // deltaEval = (float)newEval - (float)overallEval;
+                    // printf("Material Evaluation: %f\n", materialEval);
+                    // printf("Position Evaluation: %f\n", positionEval);
+                    // printf("Delta Evaluation: %f\n", deltaEval);
+
+                    blackBestMovePieceB = iterationPieceB;
+                    blackBestMoveXOrgLocB = iterationXOrgLocB;
+                    blackBestMoveYOrgLocB = iterationYOrgLocB;
+                    blackBestMoveXLocB = iterationXLocB;
+                    blackBestMoveYLocB = iterationYLocB;
+                }
+            }
+            if (blackBestMoveEval > whiteBestMoveEval)
+            {
+                whiteBestMoveEval = blackBestMoveEval;
+
+                whiteBestMovePieceW = iterationPieceW;
+                whiteBestMoveXOrgLocW = iterationXOrgLocW;
+                whiteBestMoveYOrgLocW = iterationYOrgLocW;
+                whiteBestMoveXLocW = iterationXLocW;
+                whiteBestMoveYLocW = iterationYLocW;
+
+                blackBestMoveforWBMPieceB = blackBestMovePieceB;
+                blackBestMoveforWBMXOrgLocB = blackBestMoveXOrgLocB;
+                blackBestMoveforWBMYOrgLocB = blackBestMoveYOrgLocB;
+                blackBestMoveforWBMXLocB = blackBestMoveXLocB;
+                blackBestMoveforWBMYLocB = blackBestMoveYLocB;
+
+                whiteBestMoveIndex = i;
+
+                deltaEval = (float)newEval - (float)overallEval;
                 // printf("Material Evaluation: %f\n", materialEval);
                 // printf("Position Evaluation: %f\n", positionEval);
                 // printf("Delta Evaluation: %f\n", deltaEval);
-
-
-                blackBestMovePieceB = iterationPieceB;
-                blackBestMoveXOrgLocB = iterationXOrgLocB;
-                blackBestMoveYOrgLocB = iterationYOrgLocB;
-                blackBestMoveXLocB = iterationXLocB;
-                blackBestMoveYLocB = iterationYLocB;
-
             }
         }
-        if (blackBestMoveEval > whiteBestMoveEval) {
-            whiteBestMoveEval = blackBestMoveEval;
+        chessNotation(&chessMatrix, whiteBestMovePieceW, whiteBestMoveXOrgLocW, whiteBestMoveYOrgLocW, whiteBestMoveXLocW, whiteBestMoveYLocW);
+        chessNotation(&chessMatrixTempW, blackBestMoveforWBMPieceB, blackBestMoveforWBMXOrgLocB, blackBestMoveforWBMYOrgLocB, blackBestMoveforWBMXLocB, blackBestMoveforWBMYLocB);
 
-            whiteBestMovePieceW = iterationPieceW;
-            whiteBestMoveXOrgLocW = iterationXOrgLocW;
-            whiteBestMoveYOrgLocW = iterationYOrgLocW;
-            whiteBestMoveXLocW = iterationXLocW;
-            whiteBestMoveYLocW = iterationYLocW;
+        updateChessMatrix(&chessMatrix, whiteBestMovePieceW, whiteBestMoveXOrgLocW, whiteBestMoveYOrgLocW, whiteBestMoveXLocW, whiteBestMoveYLocW);
 
-            whiteBestMoveIndex = i;
-            chessNotation(&chessMatrix, whiteBestMovePieceW, whiteBestMoveXOrgLocW, whiteBestMoveYOrgLocW, whiteBestMoveXLocW, whiteBestMoveYLocW);
-            chessNotation(&chessMatrixTempW, blackBestMovePieceB, blackBestMoveXOrgLocB, blackBestMoveYOrgLocB, blackBestMoveXLocB, blackBestMoveYLocB);
-
-            deltaEval = (float)newEval - (float)overallEval;
-            printf("Material Evaluation: %f\n", materialEval);
-            printf("Position Evaluation: %f\n", positionEval);
-            printf("Delta Evaluation: %f\n", deltaEval);
-
-
-        }
+        // scanf(%d, .....)
+        updateChessMatrix(&chessMatrix, blackBestMoveforWBMPieceB, blackBestMoveforWBMXOrgLocB, blackBestMoveforWBMYOrgLocB, blackBestMoveforWBMXLocB, blackBestMoveforWBMYLocB);
     }
 }
