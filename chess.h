@@ -75,6 +75,8 @@ unsigned int xPositionArray[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
 unsigned int xPositionArrayTemp[36] = { NOTHING };
 unsigned int yPositionArrayTemp[36] = { NOTHING };
+unsigned int xPositionArrayTemp2[36] = { NOTHING };
+unsigned int yPositionArrayTemp2[36] = { NOTHING };
 
 
 unsigned int searchDimension[36] = {4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0};
@@ -198,16 +200,24 @@ unsigned int iterationArrayW[3][300];
 unsigned int iterationArrayB[3][300];
 unsigned int iterationArrayWTemp[3][300];
 unsigned int iterationArrayBTemp[3][300];
+unsigned int iterationArrayBTemp2[3][300];
 unsigned int iterationIndexW = 0;
 unsigned int iterationIndexB = 0;
 unsigned int iterationIndexWTemp = 0;
 unsigned int iterationIndexBTemp = 0;
+unsigned int iterationIndexBTemp2 = 0;
 
 unsigned int iterationPieceW = 0;
 unsigned int iterationXLocW = 0;
 unsigned int iterationYLocW = 0;
 unsigned int iterationXOrgLocW = 0;
 unsigned int iterationYOrgLocW = 0;
+
+unsigned int iterationPieceB = 0;
+unsigned int iterationXLocB = 0;
+unsigned int iterationYLocB = 0;
+unsigned int iterationXOrgLocB = 0;
+unsigned int iterationYOrgLocB = 0;
 
 unsigned int wRook1xPosition;
 unsigned int wRook1yPosition;
@@ -324,6 +334,22 @@ float materialEval = 0.0F;
 float overallEval = 0.0F;
 float newEval = 0.0F;
 float deltaEval = 0.0F;
+float blackBestMoveEval = 1100.0F;
+unsigned int blackBestMoveIndex;
+float whiteBestMoveEval = -1100.0F;
+float whiteTempBestMoveEval = -1100.0F;
+unsigned int whiteBestMoveIndex;
+unsigned int blackBestMovePieceB;
+unsigned int blackBestMoveXOrgLocB;
+unsigned int blackBestMoveYOrgLocB;
+unsigned int blackBestMoveXLocB;
+unsigned int blackBestMoveYLocB;
+
+unsigned int whiteBestMovePieceW;
+unsigned int whiteBestMoveXOrgLocW;
+unsigned int whiteBestMoveYOrgLocW;
+unsigned int whiteBestMoveXLocW;
+unsigned int whiteBestMoveYLocW;
 
 unsigned int pawnXLoc;
 unsigned int pawnYLoc;
