@@ -47,12 +47,12 @@
 
 #define VAL_SINGLE_SQUARE  0.05F
 #define VAL_ATTACKED_PIECE  0.05F
-#define VAL_PROTECTED_PIECE  0.05F
+#define VAL_PROTECTED_PIECE  0.01F
 #define VAL_ATTACKED_PIECE_VALUE  0.02F
-#define VAL_PROTECTED_PIECE_VALUE  0.02F
+#define VAL_PROTECTED_PIECE_VALUE  0.01F
+#define VAL_TERRITORY_VALUE  0.005F
+#define VAL_ENPRISE_VALUE  0.07F
 
-
-/*
 unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WBISHOP2, WKNIGHT2, WROOK2},
                                    {WPAWN1, WPAWN2, WPAWN3, WPAWN4, WPAWN5, WPAWN6, WPAWN7, WPAWN8},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
@@ -61,7 +61,8 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WB
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {BPAWN1, BPAWN2, BPAWN3, BPAWN4, BPAWN5, BPAWN6, BPAWN7, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
-*/
+
+/*
 unsigned int chessMatrix[8][8] = {{WROOK1, NOTHING, NOTHING, WQUEEN, WKING, NOTHING, NOTHING, WROOK2},
                                    {WPAWN1, WBISHOP1, WPAWN3, NOTHING, WPAWN5, WPAWN6, WBISHOP2, WPAWN8},
                                    {NOTHING, WPAWN2, NOTHING, WPAWN4, NOTHING, NOTHING, WPAWN7, NOTHING},
@@ -70,6 +71,7 @@ unsigned int chessMatrix[8][8] = {{WROOK1, NOTHING, NOTHING, WQUEEN, WKING, NOTH
                                    {NOTHING, BPAWN2, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN7, NOTHING},
                                    {BPAWN1, NOTHING, BPAWN3, BPAWN4, BPAWN5, BPAWN6, NOTHING, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, NOTHING, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
+*/                              
 unsigned int chessMatrixTempW[8][8] = { 0 };
 unsigned int chessMatrixTempB[8][8] = { 0 };
 
@@ -214,6 +216,14 @@ unsigned int iterationXLocW = 0;
 unsigned int iterationYLocW = 0;
 unsigned int iterationXOrgLocW = 0;
 unsigned int iterationYOrgLocW = 0;
+unsigned int kingXLocW;
+unsigned int kingXLocB;
+unsigned int kingYLocW;
+unsigned int kingYLocB;
+unsigned int kingUnderAttackW;
+unsigned int kingUnderAttackB;
+unsigned int kingUnderAttackWAfter;
+unsigned int kingUnderAttackBAfter;
 
 unsigned int iterationPieceB = 0;
 unsigned int iterationXLocB = 0;
@@ -272,6 +282,9 @@ unsigned int bPawn8yPosition;
 
 unsigned int PiecexPosition;
 unsigned int PieceyPosition;
+
+unsigned int territoryIndexW;
+unsigned int territoryIndexB;
 
 unsigned int searchIndex = 1;
 unsigned int xIndex = 0;
