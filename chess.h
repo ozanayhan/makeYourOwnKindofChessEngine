@@ -46,12 +46,12 @@
 #define NOTHING 255
 
 #define VAL_SINGLE_SQUARE  0.05F
-#define VAL_ATTACKED_PIECE  0.05F
+#define VAL_ATTACKED_PIECE  0.15F
 #define VAL_PROTECTED_PIECE  0.01F
 #define VAL_ATTACKED_PIECE_VALUE  0.02F
 #define VAL_PROTECTED_PIECE_VALUE  0.01F
 #define VAL_TERRITORY_VALUE  0.005F
-#define VAL_ENPRISE_VALUE  0.07F
+#define VAL_ENPRISE_VALUE  0.10F
 
 unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WBISHOP2, WKNIGHT2, WROOK2},
                                    {WPAWN1, WPAWN2, WPAWN3, WPAWN4, WPAWN5, WPAWN6, WPAWN7, WPAWN8},
@@ -61,17 +61,8 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WB
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {BPAWN1, BPAWN2, BPAWN3, BPAWN4, BPAWN5, BPAWN6, BPAWN7, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
+                            
 
-/*
-unsigned int chessMatrix[8][8] = {{WROOK1, NOTHING, NOTHING, WQUEEN, WKING, NOTHING, NOTHING, WROOK2},
-                                   {WPAWN1, WBISHOP1, WPAWN3, NOTHING, WPAWN5, WPAWN6, WBISHOP2, WPAWN8},
-                                   {NOTHING, WPAWN2, NOTHING, WPAWN4, NOTHING, NOTHING, WPAWN7, NOTHING},
-                                   {NOTHING, NOTHING, BQUEEN, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, BPAWN2, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN7, NOTHING},
-                                   {BPAWN1, NOTHING, BPAWN3, BPAWN4, BPAWN5, BPAWN6, NOTHING, BPAWN8},
-                                   {BROOK1, BKNIGHT1, BBISHOP1, NOTHING, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
-*/                              
 unsigned int chessMatrixTempW[8][8] = { 0 };
 unsigned int chessMatrixTempB[8][8] = { 0 };
 
@@ -192,6 +183,7 @@ unsigned int bPawn8AttackMatrix[8][8] = { 0 };
 
 unsigned int wPositionalControl[8][8] = { 0 };
 unsigned int wAttackMatrix[8][8] = { 0 };
+unsigned int wAttackMatrixTemp[8][8] = { 0 };
 unsigned int wProtectionMatrix[8][8] = { 0 };
 unsigned int bPositionalControl[8][8] = { 0 };
 unsigned int bAttackMatrix[8][8] = { 0 };
