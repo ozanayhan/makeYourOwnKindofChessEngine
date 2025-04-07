@@ -740,11 +740,22 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
         if (yPositionArray[i] != NOTHING)
             territoryIndexB += (7 - yPositionArray[i]);
     }
-
+    wMaterialCount = 0;
+    bMaterialCount = 0;
     for (unsigned int j = 0; j < 8; j++)
     {
         for (unsigned int i = 0; i < 8; i++)
         {
+
+            if ((chessMatrix)[j][i] >= WROOK1 && (chessMatrix)[j][i] <= WPROMOTION2)
+            {
+                wMaterialCount += ValPcs[((chessMatrix)[j][i] - 1)];
+            }
+            if ((chessMatrix)[j][i] >= BROOK1 && (chessMatrix)[j][i] <= BPROMOTION2)
+            {
+                bMaterialCount += ValPcs[((chessMatrix)[j][i] - 1)];
+            }
+
             wPositionalControl[j][i] = wRook1PositionalControl[j][i] + wKnight1PositionalControl[j][i] +
                                        wBishop1PositionalControl[j][i] + wQueenPositionalControl[j][i] + wKingPositionalControl[j][i] +
                                        wBishop2PositionalControl[j][i] + wKnight2PositionalControl[j][i] + wRook2PositionalControl[j][i] +
@@ -814,6 +825,7 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
                       (((float)wValPcsAttack - (float)bValPcsAttack) * VAL_ATTACKED_PIECE_VALUE) +
                       (((float)territoryIndexW - (float)territoryIndexB) * VAL_TERRITORY_VALUE) +
                       (((float)bTotNumPcsEnPrise - (float)wTotNumPcsEnPrise) * VAL_ENPRISE_VALUE) +
+                      ((float)wMaterialCount - (float)bMaterialCount) * 0.5F +
                       (((float)wValPcsProtect - (float)bValPcsProtect) * VAL_PROTECTED_PIECE_VALUE);
 
     // printf("Number of Squares Controlled by White: %d\n", wTotNumSqControlled);
@@ -832,7 +844,7 @@ void processBoardPosition(unsigned int chessMatrix[8][8], float(*positionEval), 
 int main(void)
 {
     unsigned int previousMove = 0;
-    for (unsigned int t = 0; t < 20; t++)
+    for (unsigned int t = 0; t < 25; t++)
     {
         overallEval = 0.0F;
         newEval = 0.0F;
@@ -858,7 +870,7 @@ int main(void)
                 iterationArrayW[2][movesIndexW] = pawnYLoc + 1;
                 ++movesIndexW;
             }
-            if ((chessMatrix[3][pawnXLoc] == NOTHING) && pawnYLoc == 1)
+            if ((chessMatrix[3][pawnXLoc] == NOTHING) && (chessMatrix[2][pawnXLoc] == NOTHING) && pawnYLoc == 1)
             {
                 iterationArrayW[0][movesIndexW] = pieces;
                 iterationArrayW[1][movesIndexW] = pawnXLoc;
@@ -963,8 +975,7 @@ int main(void)
             kingUnderAttackWAfter = !!bAttackMatrix[kingYLocW][kingXLocW];
             if (kingUnderAttackWAfter)
                 continue;
-            //chessNotation(&chessMatrix, iterationPieceW, iterationXOrgLocW, iterationYOrgLocW, iterationXLocW, iterationYLocW);
-    
+            // chessNotation(&chessMatrix, iterationPieceW, iterationXOrgLocW, iterationYOrgLocW, iterationXLocW, iterationYLocW);
 
             unsigned int movesIndexB = iterationIndexBTemp;
             for (unsigned int pieces = BPAWN1; pieces <= BPAWN8; pieces++)
@@ -978,7 +989,7 @@ int main(void)
                     iterationArrayBTemp[2][movesIndexB] = pawnYLoc - 1;
                     ++movesIndexB;
                 }
-                if ((chessMatrix[4][pawnXLoc] == NOTHING) && pawnYLoc == 6)
+                if ((chessMatrix[4][pawnXLoc] == NOTHING) && (chessMatrix[5][pawnXLoc] == NOTHING) && pawnYLoc == 6)
                 {
                     iterationArrayBTemp[0][movesIndexB] = pieces;
                     iterationArrayBTemp[1][movesIndexB] = pawnXLoc;
@@ -1127,11 +1138,12 @@ int main(void)
         kingXLocW = xPositionArray[WKING - 1];
         kingYLocW = yPositionArray[WKING - 1];
         kingUnderAttackWAfter = !!bAttackMatrix[kingYLocW][kingXLocW];
-        if (kingUnderAttackWAfter) {
+        if (kingUnderAttackWAfter)
+        {
             printf("checkmate White");
             return 0;
         }
-        
+
         resetPositions(&xPositionArray);
         resetPositions(&yPositionArray);
         resetPositions(&xPositionArrayTemp);
@@ -1167,11 +1179,11 @@ int main(void)
         kingXLocB = xPositionArray[BKING - 1];
         kingYLocB = yPositionArray[BKING - 1];
         kingUnderAttackBAfter = !!wAttackMatrix[kingYLocB][kingXLocB];
-        if (kingUnderAttackBAfter) {
+        if (kingUnderAttackBAfter)
+        {
             printf("checkmate Black");
             return 0;
         }
-
 
         resetPositions(&xPositionArray);
         resetPositions(&yPositionArray);
