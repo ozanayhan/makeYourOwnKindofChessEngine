@@ -342,7 +342,8 @@ void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionA
         }
         (*xPositionArray)[pieces - 1] = NOTHING;
         (*yPositionArray)[pieces - 1] = NOTHING;
-    outw:
+        outw:
+        ;
     }
 }
 

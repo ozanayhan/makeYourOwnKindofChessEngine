@@ -63,12 +63,12 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WB
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
 */
 unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, WROOK1, NOTHING, WKING, NOTHING, NOTHING, WROOK2},
-                                   {WPAWN1, WBISHOP1, WPAWN3, WQUEEN, NOTHING, WPAWN6, WBISHOP2, WPAWN8},
+                                   {WQUEEN, WBISHOP1, WPAWN3, NOTHING, NOTHING, WPAWN6, WBISHOP2, WPAWN8},
                                    {NOTHING, WPAWN2, WKNIGHT1, WPAWN4, NOTHING, WKNIGHT2, WPAWN7, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, WPAWN5, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, BPAWN4, NOTHING, NOTHING, NOTHING, NOTHING},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
+                                   {BPAWN1, NOTHING, NOTHING, BPAWN4, WPAWN5, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, BPAWN2, BKNIGHT1, NOTHING, BPAWN5, NOTHING, BPAWN7, NOTHING},
-                                   {BPAWN1, BBISHOP1, BPAWN3, BQUEEN, BKNIGHT2, BPAWN6, BBISHOP2, BPAWN8},
+                                   {NOTHING, BBISHOP1, BPAWN3, BQUEEN, BKNIGHT2, BPAWN6, BBISHOP2, BPAWN8},
                                    {NOTHING, NOTHING, NOTHING, BROOK1, BKING, NOTHING, NOTHING, BROOK2}};
  
 
