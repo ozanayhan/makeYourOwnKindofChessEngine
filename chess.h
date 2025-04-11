@@ -52,16 +52,17 @@
 #define VAL_PROTECTED_PIECE_VALUE  0.01F
 #define VAL_TERRITORY_VALUE  0.005F
 #define VAL_ENPRISE_VALUE  0.10F
-/*
+
 unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WBISHOP2, WKNIGHT2, WROOK2},
-                                   {WPAWN1, WPAWN2, WPAWN3, WPAWN4, NOTHING, WPAWN6, WPAWN7, WPAWN8},
+                                   {WPAWN1, WPAWN2, WPAWN3, WPAWN4, WPAWN5, WPAWN6, WPAWN7, WPAWN8},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, WPAWN5, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, BPAWN5, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {BPAWN1, BPAWN2, BPAWN3, BPAWN4, NOTHING, BPAWN6, BPAWN7, BPAWN8},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
+                                   {BPAWN1, BPAWN2, BPAWN3, BPAWN4, BPAWN5, BPAWN6, BPAWN7, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
-*/
+
+/*
 unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, WROOK1, NOTHING, WKING, NOTHING, NOTHING, WROOK2},
                                    {WQUEEN, WBISHOP1, WPAWN3, NOTHING, NOTHING, WPAWN6, WBISHOP2, WPAWN8},
                                    {NOTHING, WPAWN2, WKNIGHT1, WPAWN4, NOTHING, WKNIGHT2, WPAWN7, NOTHING},
@@ -70,7 +71,7 @@ unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, WROOK1, NOTHING, WKING, NOT
                                    {NOTHING, BPAWN2, BKNIGHT1, NOTHING, BPAWN5, NOTHING, BPAWN7, NOTHING},
                                    {NOTHING, BBISHOP1, BPAWN3, BQUEEN, BKNIGHT2, BPAWN6, BBISHOP2, BPAWN8},
                                    {NOTHING, NOTHING, NOTHING, BROOK1, BKING, NOTHING, NOTHING, BROOK2}};
- 
+*/ 
 
 unsigned int chessMatrixTempW[8][8] = { 0 };
 unsigned int chessMatrixTempB[8][8] = { 0 };
@@ -81,6 +82,13 @@ unsigned int xPositionArrayTemp[36] = { NOTHING };
 unsigned int yPositionArrayTemp[36] = { NOTHING };
 unsigned int xPositionArrayTemp2[36] = { NOTHING };
 unsigned int yPositionArrayTemp2[36] = { NOTHING };
+
+unsigned char userMove[10];
+unsigned int userPiecePlay;
+unsigned int userPieceXLoc;
+unsigned int userPieceYLoc;
+unsigned int userPieceDestXLoc;
+unsigned int userPieceDestYLoc;
 
 
 unsigned int searchDimension[36] = {4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 4, 8, 4, 8, 8, 4, 8, 4, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0};

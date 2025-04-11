@@ -72,6 +72,30 @@ void quickSort(int arr[], int low, int high)
     }
 }
 
+
+void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionArray)[36], unsigned int (*yPositionArray)[36])
+{
+    for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
+    {
+        for (unsigned int j = 0; j < 8; j++)
+        {
+            for (unsigned int i = 0; i < 8; i++)
+            {
+                if (pieces == chessMatrix[j][i])
+                {
+                    (*xPositionArray)[pieces - 1] = i;
+                    (*yPositionArray)[pieces - 1] = j;
+                    goto outw;
+                }
+            }
+        }
+        (*xPositionArray)[pieces - 1] = NOTHING;
+        (*yPositionArray)[pieces - 1] = NOTHING;
+        outw:
+        ;
+    }
+}
+
 void updateChessMatrix(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc)
 {
     if (piecePlay == SHORT_CASTLE_W)
@@ -129,6 +153,148 @@ void updateChessMatrix(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay
         (*chessMatrix)[pieceDestYLoc][pieceDestXLoc] = piecePlay;
         (*chessMatrix)[pieceYLoc][pieceXLoc] = NOTHING;
     }
+}
+
+void reverseChessNotation(unsigned char (*userMove)[10], unsigned int (*chessMatrix)[8][8], unsigned int *userPiecePlay, unsigned int *userPieceXLoc, unsigned int *userPieceYLoc, unsigned int *userPieceDestXLoc, unsigned int *userPieceDestYLoc)
+{
+    getPiecePositions((*chessMatrix), &xPositionArray, &yPositionArray);
+    if ((*userMove)[1] == 88 || (*userMove)[1] == 120)
+    {
+        (*userPieceDestXLoc) = (*userMove)[2] - 97;
+        (*userPieceDestYLoc)= (*userMove)[3] - 49;
+    }
+    else if ((*userMove)[0] > 96 && (*userMove)[0] < 105) {
+        (*userPieceDestXLoc) = (*userMove)[0] - 97;
+        (*userPieceDestYLoc)= (*userMove)[1] - 49;
+    }
+    else if ((*userMove)[0] > 65 && (*userMove)[0] < 83) {
+        (*userPieceDestXLoc) = (*userMove)[1] - 97;
+        (*userPieceDestYLoc)= (*userMove)[2] - 49;
+    }
+
+
+    if ((*userMove)[0] == 79 && (*userMove)[1] == 45 && (*userMove)[2] == 79 && (*userMove)[3] == 45)
+    {
+        // Long Castle
+        (*userPiecePlay) = BKING;
+        (*userPieceDestXLoc) = 2;
+        (*userPieceDestYLoc)= 7;
+        (*userPieceXLoc) = 4;
+        (*userPieceYLoc)= 7;
+        
+    }
+    else if ((*userMove)[0] == 79 && (*userMove)[1] == 45 && (*userMove)[2] == 79)
+    {
+        // Short Castle
+        (*userPiecePlay) = BKING;
+        (*userPieceDestXLoc) = 6;
+        (*userPieceDestYLoc)= 7;
+        (*userPieceXLoc) = 4;
+        (*userPieceYLoc)= 7;
+    }
+    else if ((*userMove)[0] == 75)
+    {
+        // King Move
+        (*userPiecePlay) = BKING;
+        (*userPieceXLoc) = xPositionArray[BKING - 1];
+        (*userPieceYLoc)= yPositionArray[BKING - 1];
+    }
+    else if ((*userMove)[0] == 81)
+    {
+        // Queen Move
+        (*userPiecePlay) = BQUEEN;
+        (*userPieceXLoc) = xPositionArray[BQUEEN - 1];
+        (*userPieceYLoc)= yPositionArray[BQUEEN - 1];
+    }
+    else if ((*userMove)[0] == 82)
+    {
+        // Rook Move
+        (*userPiecePlay) = BROOK1;
+        (*userPieceXLoc) = xPositionArray[BROOK1 - 1];
+        (*userPieceYLoc)= yPositionArray[BROOK1 - 1];
+        if (((*userPieceXLoc) != (*userPieceDestXLoc)) && ((*userPieceYLoc) != (*userPieceDestYLoc))) {
+            (*userPiecePlay) = BROOK2;
+            (*userPieceXLoc) = xPositionArray[BROOK2 - 1];
+            (*userPieceYLoc)= yPositionArray[BROOK2 - 1];
+        }
+        if (((*userPieceXLoc) != (*userPieceDestXLoc)) && ((*userPieceYLoc) != (*userPieceDestYLoc))) {
+            (*userPiecePlay) = NOTHING;
+        }
+    }
+    else if ((*userMove)[0] == 66)
+    {
+        // Bishop Move
+        if (((*userPieceDestXLoc) + (*userPieceDestYLoc)) % 2) {
+            (*userPiecePlay) = BBISHOP1;
+            (*userPieceXLoc) = xPositionArray[BBISHOP1 - 1];
+            (*userPieceYLoc)= yPositionArray[BBISHOP1 - 1];
+        }
+        else {
+            (*userPiecePlay) = BBISHOP2;
+            (*userPieceXLoc) = xPositionArray[BBISHOP2 - 1];
+            (*userPieceYLoc)= yPositionArray[BBISHOP2 - 1];
+        }
+    }
+    else if ((*userMove)[0] == 78)
+    {
+        // Knight Move
+        (*userPiecePlay) = BKNIGHT1;
+        (*userPieceXLoc) = xPositionArray[BKNIGHT1 - 1];
+        (*userPieceYLoc)= yPositionArray[BKNIGHT1 - 1];
+        if ((((*userPieceDestXLoc) - (*userPieceXLoc)) > 7 ? ((*userPieceXLoc) - (*userPieceDestXLoc)) : ((*userPieceDestXLoc) - (*userPieceXLoc))) + (((*userPieceDestYLoc) - (*userPieceYLoc)) > 7 ? ((*userPieceYLoc) - (*userPieceDestYLoc)) : ((*userPieceDestYLoc) - (*userPieceYLoc))) != 3 || (*userPieceDestYLoc) == (*userPieceYLoc) || (*userPieceDestXLoc) == (*userPieceXLoc)) {
+            (*userPiecePlay) = BKNIGHT2;
+            (*userPieceXLoc) = xPositionArray[BKNIGHT2 - 1];
+            (*userPieceYLoc)= yPositionArray[BKNIGHT2 - 1];
+        }
+        if ((((*userPieceDestXLoc) - (*userPieceXLoc)) > 7 ? ((*userPieceXLoc) - (*userPieceDestXLoc)) : ((*userPieceDestXLoc) - (*userPieceXLoc))) + (((*userPieceDestYLoc) - (*userPieceYLoc)) > 7 ? ((*userPieceYLoc) - (*userPieceDestYLoc)) : ((*userPieceDestYLoc) - (*userPieceYLoc))) != 3 || (*userPieceDestYLoc) == (*userPieceYLoc) || (*userPieceDestXLoc) == (*userPieceXLoc)) {
+            (*userPiecePlay) = NOTHING;
+        }
+    }
+    else if ((*userMove)[0] > 96 && (*userMove)[0] < 105)
+    {
+        // Pawn Move
+        if ((*userMove)[0] == 97) {
+            (*userPiecePlay) = BPAWN1;
+            (*userPieceXLoc) = xPositionArray[BPAWN1 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN1 - 1];
+        }
+        else if ((*userMove)[0] == 98) {
+            (*userPiecePlay) = BPAWN2;
+            (*userPieceXLoc) = xPositionArray[BPAWN2 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN2 - 1];
+        }
+        else if ((*userMove)[0] == 99) {
+            (*userPiecePlay) = BPAWN3;
+            (*userPieceXLoc) = xPositionArray[BPAWN3 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN3 - 1];
+        }
+        else if ((*userMove)[0] == 100) {
+            (*userPiecePlay) = BPAWN4;
+            (*userPieceXLoc) = xPositionArray[BPAWN4 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN4 - 1];
+        }
+        else if ((*userMove)[0] == 101) {
+            (*userPiecePlay) = BPAWN5;
+            (*userPieceXLoc) = xPositionArray[BPAWN5 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN5 - 1];
+        }
+        else if ((*userMove)[0] == 102) {
+            (*userPiecePlay) = BPAWN6;
+            (*userPieceXLoc) = xPositionArray[BPAWN6 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN6 - 1];
+        }
+        else if ((*userMove)[0] == 103) {
+            (*userPiecePlay) = BPAWN7;
+            (*userPieceXLoc) = xPositionArray[BPAWN7 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN7 - 1];
+        }
+        else if ((*userMove)[0] == 104) {
+            (*userPiecePlay) = BPAWN8;
+            (*userPieceXLoc) = xPositionArray[BPAWN8 - 1];
+            (*userPieceYLoc)= yPositionArray[BPAWN8 - 1];
+        }
+    }
+
 }
 
 void chessNotation(unsigned int (*chessMatrix)[8][8], unsigned int piecePlay, unsigned int pieceXLoc, unsigned int pieceYLoc, unsigned int pieceDestXLoc, unsigned int pieceDestYLoc)
@@ -324,28 +490,6 @@ void resetEval(void)
     resetBoardMatrix(&bPawn8ProtectionMatrix);
 }
 
-void getPiecePositions(unsigned int chessMatrix[8][8], unsigned int (*xPositionArray)[36], unsigned int (*yPositionArray)[36])
-{
-    for (unsigned int pieces = WROOK1; pieces <= BPROMOTION2; pieces++)
-    {
-        for (unsigned int j = 0; j < 8; j++)
-        {
-            for (unsigned int i = 0; i < 8; i++)
-            {
-                if (pieces == chessMatrix[j][i])
-                {
-                    (*xPositionArray)[pieces - 1] = i;
-                    (*yPositionArray)[pieces - 1] = j;
-                    goto outw;
-                }
-            }
-        }
-        (*xPositionArray)[pieces - 1] = NOTHING;
-        (*yPositionArray)[pieces - 1] = NOTHING;
-        outw:
-        ;
-    }
-}
 
 void processPieceActivity(unsigned int chessMatrix[8][8], unsigned int pieces, unsigned int PiecexPosition, unsigned int PieceyPosition, unsigned int (*PositionalControl)[8][8], unsigned int (*ProtectionMatrix)[8][8], unsigned int (*AttackMatrix)[8][8], unsigned int (*ProtectionMapping)[36][5], unsigned int (*AttackMapping)[36][5], unsigned int (*iterationArrayW)[3][300], unsigned int(*iterationIndexW), unsigned int (*iterationArrayB)[3][300], unsigned int(*iterationIndexB))
 {
@@ -1171,10 +1315,14 @@ int main(void)
         resetEvaluation(&materialEval);
         resetEvaluation(&positionEval);
 
-        chessNotation(&chessMatrix, blackBestMoveforWBMPieceB, blackBestMoveforWBMXOrgLocB, blackBestMoveforWBMYOrgLocB, blackBestMoveforWBMXLocB, blackBestMoveforWBMYLocB);
+        // chessNotation(&chessMatrix, blackBestMoveforWBMPieceB, blackBestMoveforWBMXOrgLocB, blackBestMoveforWBMYOrgLocB, blackBestMoveforWBMXLocB, blackBestMoveforWBMYLocB);
 
-        // scanf(%d, .....)
-        updateChessMatrix(&chessMatrix, blackBestMoveforWBMPieceB, blackBestMoveforWBMXOrgLocB, blackBestMoveforWBMYOrgLocB, blackBestMoveforWBMXLocB, blackBestMoveforWBMYLocB);
+        printf("Please enter your move in Algebraic Notation:\n");
+        scanf("%s", &userMove);
+
+
+        reverseChessNotation(&userMove, &chessMatrix, &userPiecePlay, &userPieceXLoc, &userPieceYLoc, &userPieceDestXLoc, &userPieceDestYLoc);
+        updateChessMatrix(&chessMatrix, userPiecePlay, userPieceXLoc, userPieceYLoc, userPieceDestXLoc, userPieceDestYLoc);
         processBoardPosition(chessMatrix, &positionEval, &wAttackMatrix, &bAttackMatrix, &iterationArrayWTemp, &iterationIndexWTemp, &iterationArrayBTemp, &iterationIndexBTemp);
         getPiecePositions(chessMatrix, &xPositionArray, &yPositionArray);
         kingXLocB = xPositionArray[BKING - 1];
