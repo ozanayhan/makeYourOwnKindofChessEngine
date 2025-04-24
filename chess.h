@@ -46,7 +46,7 @@
 #define NOTHING 255
 
 #define VAL_SINGLE_SQUARE  0.05F
-#define VAL_ATTACKED_PIECE  0.15F
+#define VAL_ATTACKED_PIECE  0.05F
 #define VAL_PROTECTED_PIECE  0.01F
 #define VAL_ATTACKED_PIECE_VALUE  0.02F
 #define VAL_PROTECTED_PIECE_VALUE  0.01F
@@ -54,12 +54,12 @@
 #define VAL_ENPRISE_VALUE  0.10F
 
 unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WBISHOP2, WKNIGHT2, WROOK2},
-                                   {WPAWN1, WPAWN2, WPAWN3, WPAWN4, WPAWN5, WPAWN6, WPAWN7, WPAWN8},
+                                   {WPAWN1, WPAWN2, WPAWN3, WPAWN4, NOTHING, WPAWN6, WPAWN7, WPAWN8},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, WPAWN5, NOTHING, NOTHING, NOTHING},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, BPAWN5, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {BPAWN1, BPAWN2, BPAWN3, BPAWN4, BPAWN5, BPAWN6, BPAWN7, BPAWN8},
+                                   {BPAWN1, BPAWN2, BPAWN3, BPAWN4, NOTHING, BPAWN6, BPAWN7, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
 
 /*
@@ -73,15 +73,29 @@ unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, WROOK1, NOTHING, WKING, NOT
                                    {NOTHING, NOTHING, NOTHING, BROOK1, BKING, NOTHING, NOTHING, BROOK2}};
 */ 
 
-unsigned int chessMatrixTempW[8][8] = { 0 };
-unsigned int chessMatrixTempB[8][8] = { 0 };
+unsigned int chessMatrixPly1[8][8] = { 0 };
+unsigned int chessMatrixPly2[8][8] = { 0 };
+unsigned int chessMatrixPly3[8][8] = { 0 };
+unsigned int chessMatrixPly4[8][8] = { 0 };
+unsigned int chessMatrixPly5[8][8] = { 0 };
+unsigned int chessMatrixPly6[8][8] = { 0 };
 
 unsigned int xPositionArray[36] = { NOTHING };
+unsigned int xPositionArrayBase[36] = { NOTHING };
+unsigned int xPositionArrayPly1[36] = { NOTHING };
+unsigned int xPositionArrayPly2[36] = { NOTHING };
+unsigned int xPositionArrayPly3[36] = { NOTHING };
+unsigned int xPositionArrayPly4[36] = { NOTHING };
+unsigned int xPositionArrayPly5[36] = { NOTHING };
+unsigned int xPositionArrayPly6[36] = { NOTHING };
 unsigned int yPositionArray[36] = { NOTHING };
-unsigned int xPositionArrayTemp[36] = { NOTHING };
-unsigned int yPositionArrayTemp[36] = { NOTHING };
-unsigned int xPositionArrayTemp2[36] = { NOTHING };
-unsigned int yPositionArrayTemp2[36] = { NOTHING };
+unsigned int yPositionArrayBase[36] = { NOTHING };
+unsigned int yPositionArrayPly1[36] = { NOTHING };
+unsigned int yPositionArrayPly2[36] = { NOTHING };
+unsigned int yPositionArrayPly3[36] = { NOTHING };
+unsigned int yPositionArrayPly4[36] = { NOTHING };
+unsigned int yPositionArrayPly5[36] = { NOTHING };
+unsigned int yPositionArrayPly6[36] = { NOTHING };
 
 unsigned char userMove[10];
 unsigned int userPiecePlay;
@@ -200,25 +214,72 @@ unsigned int bPawn8AttackMatrix[8][8] = { 0 };
 
 unsigned int wPositionalControl[8][8] = { 0 };
 unsigned int wAttackMatrix[8][8] = { 0 };
-unsigned int wAttackMatrixTemp[8][8] = { 0 };
+unsigned int wAttackMatrixPly1[8][8] = { 0 };
+unsigned int wAttackMatrixPly2[8][8] = { 0 };
+unsigned int wAttackMatrixPly3[8][8] = { 0 };
+unsigned int wAttackMatrixPly4[8][8] = { 0 };
+unsigned int wAttackMatrixPly5[8][8] = { 0 };
+unsigned int wAttackMatrixPly6[8][8] = { 0 };
+
 unsigned int wProtectionMatrix[8][8] = { 0 };
 unsigned int bPositionalControl[8][8] = { 0 };
 unsigned int bAttackMatrix[8][8] = { 0 };
+unsigned int bAttackMatrixPly1[8][8] = { 0 };
+unsigned int bAttackMatrixPly2[8][8] = { 0 };
+unsigned int bAttackMatrixPly3[8][8] = { 0 };
+unsigned int bAttackMatrixPly4[8][8] = { 0 };
+unsigned int bAttackMatrixPly5[8][8] = { 0 };
+unsigned int bAttackMatrixPly6[8][8] = { 0 };
 unsigned int bProtectionMatrix[8][8] = { 0 };
 
 unsigned int ProtectionMapping[36][5] = { 0 };
+unsigned int ProtectionMappingBase[36][5] = { 0 };
+unsigned int ProtectionMappingPly1[36][5] = { 0 };
+unsigned int ProtectionMappingPly2[36][5] = { 0 };
+unsigned int ProtectionMappingPly3[36][5] = { 0 };
+unsigned int ProtectionMappingPly4[36][5] = { 0 };
+unsigned int ProtectionMappingPly5[36][5] = { 0 };
+unsigned int ProtectionMappingPly6[36][5] = { 0 };
 unsigned int AttackMapping[36][5] = { 0 };
+unsigned int AttackMappingBase[36][5] = { 0 };
+unsigned int AttackMappingPly1[36][5] = { 0 };
+unsigned int AttackMappingPly2[36][5] = { 0 };
+unsigned int AttackMappingPly3[36][5] = { 0 };
+unsigned int AttackMappingPly4[36][5] = { 0 };
+unsigned int AttackMappingPly5[36][5] = { 0 };
+unsigned int AttackMappingPly6[36][5] = { 0 };
 
 unsigned int iterationArrayW[3][300];
+unsigned int iterationArrayWPly1[3][300];
+unsigned int iterationArrayWPly2[3][300];
+unsigned int iterationArrayWPly3[3][300];
+unsigned int iterationArrayWPly4[3][300];
+unsigned int iterationArrayWPly5[3][300];
+unsigned int iterationArrayWPly6[3][300];
+
 unsigned int iterationArrayB[3][300];
-unsigned int iterationArrayWTemp[3][300];
-unsigned int iterationArrayBTemp[3][300];
-unsigned int iterationArrayBTemp2[3][300];
+unsigned int iterationArrayBPly1[3][300];
+unsigned int iterationArrayBPly2[3][300];
+unsigned int iterationArrayBPly3[3][300];
+unsigned int iterationArrayBPly4[3][300];
+unsigned int iterationArrayBPly5[3][300];
+unsigned int iterationArrayBPly6[3][300];
+
+float overallEvalArray[6][300];
 unsigned int iterationIndexW = 0;
+unsigned int iterationIndexWPly1 = 0;
+unsigned int iterationIndexWPly2 = 0;
+unsigned int iterationIndexWPly3 = 0;
+unsigned int iterationIndexWPly4 = 0;
+unsigned int iterationIndexWPly5 = 0;
+unsigned int iterationIndexWPly6 = 0;
 unsigned int iterationIndexB = 0;
-unsigned int iterationIndexWTemp = 0;
-unsigned int iterationIndexBTemp = 0;
-unsigned int iterationIndexBTemp2 = 0;
+unsigned int iterationIndexBPly1 = 0;
+unsigned int iterationIndexBPly2 = 0;
+unsigned int iterationIndexBPly3 = 0;
+unsigned int iterationIndexBPly4 = 0;
+unsigned int iterationIndexBPly5 = 0;
+unsigned int iterationIndexBPly6 = 0;
 
 unsigned int iterationPieceW = 0;
 unsigned int iterationXLocW = 0;
@@ -231,8 +292,18 @@ unsigned int kingYLocW;
 unsigned int kingYLocB;
 unsigned int kingUnderAttackW;
 unsigned int kingUnderAttackB;
-unsigned int kingUnderAttackWAfter;
-unsigned int kingUnderAttackBAfter;
+unsigned int kingUnderAttackWPly1;
+unsigned int kingUnderAttackWPly2;
+unsigned int kingUnderAttackWPly3;
+unsigned int kingUnderAttackWPly4;
+unsigned int kingUnderAttackWPly5;
+unsigned int kingUnderAttackWPly6;
+unsigned int kingUnderAttackBPly1;
+unsigned int kingUnderAttackBPly2;
+unsigned int kingUnderAttackBPly3;
+unsigned int kingUnderAttackBPly4;
+unsigned int kingUnderAttackBPly5;
+unsigned int kingUnderAttackBPly6;
 
 unsigned int iterationPieceB = 0;
 unsigned int iterationXLocB = 0;
@@ -354,27 +425,33 @@ int wExchangeGain = 0;
 int wExchangeLoss = 0;
 
 float positionEval = 0.0F;
+float positionEvalPly1 = 0.0F;
+float positionEvalPly2 = 0.0F;
+float positionEvalPly3 = 0.0F;
+float positionEvalPly4 = 0.0F;
+float positionEvalPly5 = 0.0F;
+float positionEvalPly6 = 0.0F;
 float materialEval = 0.0F;
+float materialEvalPly1 = 0.0F;
+float materialEvalPly2 = 0.0F;
+float materialEvalPly3 = 0.0F;
+float materialEvalPly4 = 0.0F;
+float materialEvalPly5 = 0.0F;
+float materialEvalPly6 = 0.0F;
 float overallEval = 0.0F;
-float newEval = 0.0F;
-float deltaEval = 0.0F;
-float blackBestMoveEval = 1100.0F;
-unsigned int blackBestMoveIndex;
+float overallEvalPly1 = 0.0F;
+float overallEvalPly2 = 0.0F;
+float overallEvalPly3 = 0.0F;
+float overallEvalPly3Temp = 0.0F;
+float overallEvalPly4 = 0.0F;
+float overallEvalPly4Temp = 0.0F;
+float overallEvalPly4Temp2 = 0.0F;
+float overallEvalPly5 = 0.0F;
+float overallEvalPly6 = 0.0F;
+
 float whiteBestMoveEval = -1100.0F;
 float whiteTempBestMoveEval = -1100.0F;
 unsigned int whiteBestMoveIndex;
-unsigned int blackBestMovePieceB;
-unsigned int blackBestMoveXOrgLocB;
-unsigned int blackBestMoveYOrgLocB;
-unsigned int blackBestMoveXLocB;
-unsigned int blackBestMoveYLocB;
-
-unsigned int blackBestMoveforWBMPieceB;
-unsigned int blackBestMoveforWBMXOrgLocB;
-unsigned int blackBestMoveforWBMYOrgLocB;
-unsigned int blackBestMoveforWBMXLocB;
-unsigned int blackBestMoveforWBMYLocB;
-
 unsigned int whiteBestMovePieceW;
 unsigned int whiteBestMoveXOrgLocW;
 unsigned int whiteBestMoveYOrgLocW;
