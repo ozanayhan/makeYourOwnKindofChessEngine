@@ -62,14 +62,14 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WB
 
 */ 
 
-unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, NOTHING, NOTHING, WKING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, BQUEEN, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
+unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WKING},
+                                   {BROOK1, NOTHING, NOTHING, BQUEEN, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
-                                   {BROOK1, NOTHING, NOTHING, NOTHING, BKING, NOTHING, NOTHING, NOTHING}};
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WPAWN8},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN8},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN7, NOTHING},
+                                   {NOTHING, NOTHING, NOTHING, NOTHING, BKING, NOTHING, NOTHING, NOTHING}};
 
 
 char str[9] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', '\0'};

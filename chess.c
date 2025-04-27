@@ -299,12 +299,12 @@ int main(void)
         printf("Please enter your move in Algebraic Notation:\n");
         scanf("%s", &userMove);
         // Step 73: Update the chess matrix with the user move.
-        previousMovePlay = userPiecePlay;
-        previousMoveXLoc = userPieceDestXLoc;
-        previousMoveYLoc = userPieceDestYLoc;
-        previousMoveDestXLoc = userPieceXLoc;
-        previousMoveDestYLoc = userPieceYLoc;
         reverseChessNotation(&userMove, &chessMatrix, &userPiecePlay, &userPieceXLoc, &userPieceYLoc, &userPieceDestXLoc, &userPieceDestYLoc);
+        previousMovePlay = userPiecePlay;
+        previousMoveXLoc = userPieceXLoc;
+        previousMoveYLoc = userPieceYLoc;
+        previousMoveDestXLoc = userPieceDestXLoc;
+        previousMoveDestYLoc = userPieceDestYLoc;
         updateChessMatrix(&chessMatrix, userPiecePlay, userPieceXLoc, userPieceYLoc, userPieceDestXLoc, userPieceDestYLoc);
     }
 }
