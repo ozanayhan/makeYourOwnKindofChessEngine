@@ -50,7 +50,7 @@
 #define VAL_PROTECTED_PIECE_VALUE  0.01F
 #define VAL_TERRITORY_VALUE  0.005F
 #define VAL_ENPRISE_VALUE  0.10F
-/*
+
 unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WBISHOP2, WKNIGHT2, WROOK2},
                                    {WPAWN1, WPAWN2, WPAWN3, WPAWN4, WPAWN5, WPAWN6, WPAWN7, WPAWN8},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
@@ -59,9 +59,7 @@ unsigned int chessMatrix[8][8] = {{WROOK1, WKNIGHT1, WBISHOP1, WQUEEN, WKING, WB
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {BPAWN1, BPAWN2, BPAWN3, BPAWN4, BPAWN5, BPAWN6, BPAWN7, BPAWN8},
                                    {BROOK1, BKNIGHT1, BBISHOP1, BQUEEN, BKING, BBISHOP2, BKNIGHT2, BROOK2}};
-
-*/ 
-
+/*
 unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WKING},
                                    {BROOK1, NOTHING, NOTHING, BQUEEN, NOTHING, NOTHING, NOTHING, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING},
@@ -70,7 +68,7 @@ unsigned int chessMatrix[8][8] = {{NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, 
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN8},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, BPAWN7, NOTHING},
                                    {NOTHING, NOTHING, NOTHING, NOTHING, BKING, NOTHING, NOTHING, NOTHING}};
-
+*/ 
 
 char str[9] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', '\0'};
 

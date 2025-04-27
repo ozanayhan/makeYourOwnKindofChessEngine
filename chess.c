@@ -4,7 +4,7 @@
 
 int main(void)
 {
-    for (unsigned int t = 0; t < 30; t++)
+    while (1)
     {
         resetOverallEvallArrays(&overallEvalArray);
         // Step 1: Get the iteration Array for the Current Board Position, and obtain the attack matrices and a positional evaluation.
